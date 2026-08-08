@@ -1,8 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getAllMarketEvents } from "@/lib/db";
 import { ASSETS } from "@/lib/assets";
 
-export async function GET(request: NextRequest) {
+export const dynamic = "force-dynamic";
+
+export async function GET() {
   try {
     const events = getAllMarketEvents();
 
@@ -12,7 +14,7 @@ export async function GET(request: NextRequest) {
     );
 
     // Generate XML sitemap
-    const baseUrl = new URL(request.url).origin;
+    const baseUrl = process.env.NEXTAUTH_URL || "https://example.com";
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
 

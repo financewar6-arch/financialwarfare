@@ -425,7 +425,7 @@ export const ASSETS: Record<string, AssetConfig> = {
       return { ...data, price: latestPrice.p, change24h };
     },
   },
-  brentcrudeoi: {
+  brentcrudeoil: {
     slug: "brentcrudeoil",
     name: "BRENT CRUDE OIL",
     symbol: "BRENT",
