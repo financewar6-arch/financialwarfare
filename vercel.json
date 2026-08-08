@@ -2,19 +2,19 @@
   "crons": [
     {
       "path": "/api/cron/detect",
-      "schedule": "*/5 * 9-16 * MON-FRI"
+      "schedule": "*/5 9-16 * * 1-5"
     },
     {
       "path": "/api/cron/news-intelligence",
-      "schedule": "*/30 * 8-18 * MON-FRI"
+      "schedule": "*/30 8-18 * * 1-5"
     },
     {
       "path": "/api/cron/briefing",
-      "schedule": "0 9 * * MON-FRI"
+      "schedule": "0 9 * * 1-5"
     },
     {
       "path": "/api/cron/shorts-generation",
-      "schedule": "*/30 8-16 * MON-FRI"
+      "schedule": "*/30 8-16 * * 1-5"
     }
   ]
 }
