@@ -1,0 +1,20 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/detect",
+      "schedule": "*/5 * 9-16 * MON-FRI"
+    },
+    {
+      "path": "/api/cron/news-intelligence",
+      "schedule": "*/30 * 8-18 * MON-FRI"
+    },
+    {
+      "path": "/api/cron/briefing",
+      "schedule": "0 9 * * MON-FRI"
+    },
+    {
+      "path": "/api/cron/shorts-generation",
+      "schedule": "*/30 8-16 * MON-FRI"
+    }
+  ]
+}

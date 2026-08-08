@@ -1,0 +1,154 @@
+{
+  "a0a706cd-c3a8-4daf-8ac6-a34dd33e13f6": {
+    "id": "a0a706cd-c3a8-4daf-8ac6-a34dd33e13f6",
+    "contentQueueId": "1922e3ce-83b2-4ba7-8ca4-216a612d819e",
+    "marketEventId": "event_nvidia_1786190129752_7hbdaih",
+    "scriptId": "8e36e144-f7ee-4681-8fc9-6cbf8e5006b5",
+    "title": "NVIDIA surges 5.8% on AI breakthrough announcement",
+    "description": "Track this asset for patterns and potential breakout signals.",
+    "duration": 45,
+    "tags": [
+      "NVDA-NASDAQ",
+      "NVIDIA Corporation"
+    ],
+    "thumbnail": {
+      "url": "/api/videos/thumbnail?symbol=NVDA-NASDAQ&change=5.8&direction=up",
+      "generatedAt": 1786199624040,
+      "method": "auto"
+    },
+    "videoUrl": "/api/videos/placeholder.mp4?id=1922e3ce-83b2-4ba7-8ca4-216a612d819e",
+    "videoSize": 1048576,
+    "format": "mp4",
+    "resolution": "1080p",
+    "fps": 30,
+    "platforms": {
+      "youtube": {
+        "published": false
+      },
+      "tiktok": {
+        "published": false
+      },
+      "instagram": {
+        "published": false
+      },
+      "twitter": {
+        "published": false
+      }
+    },
+    "generatedAt": 1786199624040
+  },
+  "afe396ab-edaa-4e3a-a526-dc9bcaf3865c": {
+    "id": "afe396ab-edaa-4e3a-a526-dc9bcaf3865c",
+    "contentQueueId": "f4391395-726a-451b-b4f3-ff67d476ae7d",
+    "marketEventId": "cd46e58c-f8b6-4c91-80f9-bac62c832a22",
+    "scriptId": "3e12f737-235a-4a01-a54b-bdb3f8f89348",
+    "title": "Apple rises 3.2% after strong iPhone sales report",
+    "description": "",
+    "duration": 45,
+    "tags": [
+      "AAPL",
+      "Apple"
+    ],
+    "thumbnail": {
+      "url": "/api/videos/thumbnail?symbol=AAPL&change=3.2&direction=up",
+      "generatedAt": 1786203709910,
+      "method": "auto"
+    },
+    "videoUrl": "/api/videos/placeholder.mp4?id=f4391395-726a-451b-b4f3-ff67d476ae7d",
+    "videoSize": 1048576,
+    "format": "mp4",
+    "resolution": "1080p",
+    "fps": 30,
+    "platforms": {
+      "youtube": {
+        "published": false
+      },
+      "tiktok": {
+        "published": false
+      },
+      "instagram": {
+        "published": false
+      },
+      "twitter": {
+        "published": false
+      }
+    },
+    "generatedAt": 1786203709910
+  },
+  "e57aa362-b7bc-42ca-bc96-09361586f6f6": {
+    "id": "e57aa362-b7bc-42ca-bc96-09361586f6f6",
+    "contentQueueId": "8f485b7d-b460-4706-8b20-d40bcb6b92e5",
+    "marketEventId": "cd46e58c-f8b6-4c91-80f9-bac62c832a22",
+    "scriptId": "04cabc5b-f66a-443c-82f9-46e4601242ef",
+    "title": "Apple rises 3.2% after strong iPhone sales report",
+    "description": "",
+    "duration": 45,
+    "tags": [
+      "AAPL",
+      "Apple"
+    ],
+    "thumbnail": {
+      "url": "/api/videos/thumbnail?symbol=AAPL&change=3.2&direction=up",
+      "generatedAt": 1786203709917,
+      "method": "auto"
+    },
+    "videoUrl": "/api/videos/placeholder.mp4?id=8f485b7d-b460-4706-8b20-d40bcb6b92e5",
+    "videoSize": 1048576,
+    "format": "mp4",
+    "resolution": "1080p",
+    "fps": 30,
+    "platforms": {
+      "youtube": {
+        "published": false
+      },
+      "tiktok": {
+        "published": false
+      },
+      "instagram": {
+        "published": false
+      },
+      "twitter": {
+        "published": false
+      }
+    },
+    "generatedAt": 1786203709917
+  },
+  "4a37b74c-3ed0-4ffc-bbbe-8ceb4cbf8fb2": {
+    "id": "4a37b74c-3ed0-4ffc-bbbe-8ceb4cbf8fb2",
+    "contentQueueId": "d879b293-fe47-41c2-97c2-a3522f7d1efc",
+    "marketEventId": "event_nvidia_1786190129752_7hbdaih",
+    "scriptId": "4b18d07d-51d3-4cb5-963d-a3b5d38b9903",
+    "title": "NVIDIA surges 5.8% on AI breakthrough announcement",
+    "description": "Track this asset for patterns and potential breakout signals.",
+    "duration": 45,
+    "tags": [
+      "NVDA-NASDAQ",
+      "NVIDIA Corporation"
+    ],
+    "thumbnail": {
+      "url": "/api/videos/thumbnail?symbol=NVDA-NASDAQ&change=5.8&direction=up",
+      "generatedAt": 1786203709923,
+      "method": "auto"
+    },
+    "videoUrl": "/api/videos/placeholder.mp4?id=d879b293-fe47-41c2-97c2-a3522f7d1efc",
+    "videoSize": 1048576,
+    "format": "mp4",
+    "resolution": "1080p",
+    "fps": 30,
+    "platforms": {
+      "youtube": {
+        "published": false
+      },
+      "tiktok": {
+        "published": false
+      },
+      "instagram": {
+        "published": false
+      },
+      "twitter": {
+        "published": false
+      }
+    },
+    "generatedAt": 1786203709923
+  }
+}

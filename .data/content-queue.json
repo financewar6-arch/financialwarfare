@@ -1,0 +1,121 @@
+{
+  "d879b293-fe47-41c2-97c2-a3522f7d1efc": {
+    "id": "d879b293-fe47-41c2-97c2-a3522f7d1efc",
+    "marketEventId": "event_nvidia_1786190129752_7hbdaih",
+    "videoType": "YOUTUBE_SHORT",
+    "scriptId": "4b18d07d-51d3-4cb5-963d-a3b5d38b9903",
+    "title": "NVIDIA surges 5.8% on AI breakthrough announcement",
+    "description": "Track this asset for patterns and potential breakout signals.",
+    "assetSlug": "nvidia",
+    "assetSymbol": "NVDA-NASDAQ",
+    "assetName": "NVIDIA Corporation",
+    "priceChange": 5.8,
+    "status": "PUBLISHED",
+    "createdAt": 1786199182212,
+    "updatedAt": 1786203709926,
+    "flaggedIssues": [
+      "Script may be too short (80- words = <30 seconds)"
+    ],
+    "reviewedAt": 1786201457855,
+    "approvalNotes": "Approved for video generation",
+    "videoId": "4a37b74c-3ed0-4ffc-bbbe-8ceb4cbf8fb2",
+    "videoUrl": "/api/videos/placeholder.mp4?id=d879b293-fe47-41c2-97c2-a3522f7d1efc",
+    "thumbnailUrl": "/api/videos/thumbnail?symbol=NVDA-NASDAQ&change=5.8&direction=up",
+    "generatedAt": 1786203709924,
+    "publishedAt": 1786203709926
+  },
+  "1922e3ce-83b2-4ba7-8ca4-216a612d819e": {
+    "id": "1922e3ce-83b2-4ba7-8ca4-216a612d819e",
+    "marketEventId": "event_nvidia_1786190129752_7hbdaih",
+    "videoType": "YOUTUBE_SHORT",
+    "scriptId": "8e36e144-f7ee-4681-8fc9-6cbf8e5006b5",
+    "title": "NVIDIA surges 5.8% on AI breakthrough announcement",
+    "description": "Track this asset for patterns and potential breakout signals.",
+    "assetSlug": "nvidia",
+    "assetSymbol": "NVDA-NASDAQ",
+    "assetName": "NVIDIA Corporation",
+    "priceChange": 5.8,
+    "status": "READY",
+    "createdAt": 1786199235624,
+    "updatedAt": 1786199624041,
+    "flaggedIssues": [
+      "Script may be too short (80- words = <30 seconds)"
+    ],
+    "reviewedAt": 1786199318124,
+    "approvalNotes": "Approved for video generation",
+    "videoId": "a0a706cd-c3a8-4daf-8ac6-a34dd33e13f6",
+    "videoUrl": "/api/videos/placeholder.mp4?id=1922e3ce-83b2-4ba7-8ca4-216a612d819e",
+    "thumbnailUrl": "/api/videos/thumbnail?symbol=NVDA-NASDAQ&change=5.8&direction=up",
+    "generatedAt": 1786199624041
+  },
+  "8f485b7d-b460-4706-8b20-d40bcb6b92e5": {
+    "id": "8f485b7d-b460-4706-8b20-d40bcb6b92e5",
+    "marketEventId": "cd46e58c-f8b6-4c91-80f9-bac62c832a22",
+    "videoType": "YOUTUBE_SHORT",
+    "scriptId": "04cabc5b-f66a-443c-82f9-46e4601242ef",
+    "title": "Apple rises 3.2% after strong iPhone sales report",
+    "description": "",
+    "assetSlug": "apple",
+    "assetSymbol": "AAPL",
+    "assetName": "Apple",
+    "priceChange": 3.2,
+    "status": "PUBLISHED",
+    "createdAt": 1786202220962,
+    "updatedAt": 1786203709920,
+    "flaggedIssues": [
+      "Script may be too short (80- words = <30 seconds)"
+    ],
+    "reviewedAt": 1786202266617,
+    "approvalNotes": "Approved for video generation",
+    "videoId": "e57aa362-b7bc-42ca-bc96-09361586f6f6",
+    "videoUrl": "/api/videos/placeholder.mp4?id=8f485b7d-b460-4706-8b20-d40bcb6b92e5",
+    "thumbnailUrl": "/api/videos/thumbnail?symbol=AAPL&change=3.2&direction=up",
+    "generatedAt": 1786203709919,
+    "publishedAt": 1786203709920
+  },
+  "bccd4916-7219-47b7-833e-ed92e76d9146": {
+    "id": "bccd4916-7219-47b7-833e-ed92e76d9146",
+    "marketEventId": "cd46e58c-f8b6-4c91-80f9-bac62c832a22",
+    "videoType": "YOUTUBE_SHORT",
+    "scriptId": "6387833e-6be6-4f8c-988e-e653ae416322",
+    "title": "Apple rises 3.2% after strong iPhone sales report",
+    "description": "",
+    "assetSlug": "apple",
+    "assetSymbol": "AAPL",
+    "assetName": "Apple",
+    "priceChange": 3.2,
+    "status": "REJECTED",
+    "createdAt": 1786202584152,
+    "updatedAt": 1786202620356,
+    "flaggedIssues": [
+      "Script may be too short (80- words = <30 seconds)"
+    ],
+    "reviewedAt": 1786202620356,
+    "rejectionReason": "Rejected by reviewer"
+  },
+  "f4391395-726a-451b-b4f3-ff67d476ae7d": {
+    "id": "f4391395-726a-451b-b4f3-ff67d476ae7d",
+    "marketEventId": "cd46e58c-f8b6-4c91-80f9-bac62c832a22",
+    "videoType": "YOUTUBE_SHORT",
+    "scriptId": "3e12f737-235a-4a01-a54b-bdb3f8f89348",
+    "title": "Apple rises 3.2% after strong iPhone sales report",
+    "description": "",
+    "assetSlug": "apple",
+    "assetSymbol": "AAPL",
+    "assetName": "Apple",
+    "priceChange": 3.2,
+    "status": "PUBLISHED",
+    "createdAt": 1786202589854,
+    "updatedAt": 1786203709913,
+    "flaggedIssues": [
+      "Script may be too short (80- words = <30 seconds)"
+    ],
+    "reviewedAt": 1786202997431,
+    "approvalNotes": "Approved for video generation",
+    "videoId": "afe396ab-edaa-4e3a-a526-dc9bcaf3865c",
+    "videoUrl": "/api/videos/placeholder.mp4?id=f4391395-726a-451b-b4f3-ff67d476ae7d",
+    "thumbnailUrl": "/api/videos/thumbnail?symbol=AAPL&change=3.2&direction=up",
+    "generatedAt": 1786203709912,
+    "publishedAt": 1786203709913
+  }
+}
