@@ -35,7 +35,7 @@ export const ASSETS: Record<string, AssetConfig> = {
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
     },
   },
   apple: {
@@ -57,7 +57,7 @@ export const ASSETS: Record<string, AssetConfig> = {
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
     },
   },
   nasdaq: {
@@ -79,7 +79,7 @@ export const ASSETS: Record<string, AssetConfig> = {
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
     },
   },
   ethereum: {
@@ -101,7 +101,7 @@ export const ASSETS: Record<string, AssetConfig> = {
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
     },
   },
   microsoft: {
@@ -165,7 +165,7 @@ export const ASSETS: Record<string, AssetConfig> = {
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
     },
   },
   bnb: {
@@ -236,7 +236,7 @@ export const ASSETS: Record<string, AssetConfig> = {
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
     },
   },
   palladium: {
@@ -251,7 +251,7 @@ export const ASSETS: Record<string, AssetConfig> = {
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
     },
   },
   copper: {
@@ -266,7 +266,7 @@ export const ASSETS: Record<string, AssetConfig> = {
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
     },
   },
   netflix: {
@@ -346,7 +346,7 @@ export const ASSETS: Record<string, AssetConfig> = {
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
     },
   },
   usdollar: {
@@ -361,23 +361,8 @@ export const ASSETS: Record<string, AssetConfig> = {
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
     },
-  },
-  // Major Cryptocurrencies
-  solana: {
-    slug: "solana",
-    name: "SOLANA",
-    symbol: "SOL",
-    category: "Crypto",
-    fetchFeed: (rangeDays) => fetchBinanceOHLCV("solana", rangeDays),
-  },
-  ripple: {
-    slug: "ripple",
-    name: "RIPPLE",
-    symbol: "XRP",
-    category: "Crypto",
-    fetchFeed: (rangeDays) => fetchBinanceOHLCV("ripple", rangeDays),
   },
   // Commodities
   naturalgas: {
@@ -392,37 +377,7 @@ export const ASSETS: Record<string, AssetConfig> = {
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h };
-    },
-  },
-  copper: {
-    slug: "copper",
-    name: "COPPER",
-    symbol: "HG",
-    category: "Commodities",
-    fetchFeed: async (rangeDays) => {
-      const range = rangeDays === "1" ? "1mo" : rangeDays === "7" ? "3mo" : "1y";
-      const data = await fetchYahooOhlc("HG=F", range);
-      if (!data.history.length) throw new Error("No copper data");
-      const latestPrice = data.history[data.history.length - 1];
-      const previousPrice = data.history[data.history.length - 2] || latestPrice;
-      const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h };
-    },
-  },
-  palladium: {
-    slug: "palladium",
-    name: "PALLADIUM",
-    symbol: "PA",
-    category: "Precious Metals",
-    fetchFeed: async (rangeDays) => {
-      const range = rangeDays === "1" ? "1mo" : rangeDays === "7" ? "3mo" : "1y";
-      const data = await fetchYahooOhlc("PA=F", range);
-      if (!data.history.length) throw new Error("No palladium data");
-      const latestPrice = data.history[data.history.length - 1];
-      const previousPrice = data.history[data.history.length - 2] || latestPrice;
-      const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
     },
   },
   brentcrudeoil: {
@@ -437,7 +392,7 @@ export const ASSETS: Record<string, AssetConfig> = {
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
     },
   },
 };
