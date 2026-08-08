@@ -3,8 +3,7 @@ import { fetchYahooOhlc } from "./yahoofinance";
 
 // Nasdaq-100 uses the same data source as stocks (Yahoo Finance)
 export async function fetchNasdaqIndex(rangeDays: RangeDays): Promise<AssetFeedData> {
-  const range = rangeDays === "1" ? "1mo" : rangeDays === "7" ? "3mo" : "1y";
-  const data = await fetchYahooOhlc("^NDX", range);
+  const data = await fetchYahooOhlc("^NDX", rangeDays);
 
   if (!data.history.length) {
     throw new Error("No Nasdaq index data");

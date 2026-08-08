@@ -7,6 +7,6 @@ export const metadata = {
 };
 
 export default function RippleWarRoom() {
-  const asset = ASSETS.ripple;
+  const asset = ASSETS.xrp;
   return <WarRoom assetSlug={asset.slug} name={asset.name} symbol={asset.symbol} editorial={rippleEditorial} />;
 }

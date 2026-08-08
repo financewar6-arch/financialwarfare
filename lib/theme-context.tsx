@@ -5,9 +5,11 @@ import { darkPalette, lightPalette } from "./warroom/palette";
 
 type Theme = "dark" | "light";
 
+type Palette = typeof darkPalette | typeof lightPalette;
+
 interface ThemeContextType {
   theme: Theme;
-  palette: typeof darkPalette;
+  palette: Palette;
   toggleTheme: () => void;
 }
 

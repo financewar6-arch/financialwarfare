@@ -29,13 +29,12 @@ export const ASSETS: Record<string, AssetConfig> = {
     symbol: "GC=F",
     category: "Precious Metals",
     fetchFeed: async (rangeDays) => {
-      const range = rangeDays === "1" ? "1mo" : rangeDays === "7" ? "3mo" : "1y";
-      const data = await fetchYahooOhlc("GC=F", range);
+      const data = await fetchYahooOhlc("GC=F", rangeDays);
       if (!data.history.length) throw new Error("No gold data");
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "usd", marketCap: null };
     },
   },
   apple: {
@@ -51,13 +50,12 @@ export const ASSETS: Record<string, AssetConfig> = {
     symbol: "SI=F",
     category: "Precious Metals",
     fetchFeed: async (rangeDays) => {
-      const range = rangeDays === "1" ? "1mo" : rangeDays === "7" ? "3mo" : "1y";
-      const data = await fetchYahooOhlc("SI=F", range);
+      const data = await fetchYahooOhlc("SI=F", rangeDays);
       if (!data.history.length) throw new Error("No silver data");
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "usd", marketCap: null };
     },
   },
   nasdaq: {
@@ -73,13 +71,12 @@ export const ASSETS: Record<string, AssetConfig> = {
     symbol: "SPX",
     category: "Stocks",
     fetchFeed: async (rangeDays) => {
-      const range = rangeDays === "1" ? "1mo" : rangeDays === "7" ? "3mo" : "1y";
-      const data = await fetchYahooOhlc("^GSPC", range);
+      const data = await fetchYahooOhlc("^GSPC", rangeDays);
       if (!data.history.length) throw new Error("No S&P data");
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "usd", marketCap: null };
     },
   },
   ethereum: {
@@ -95,13 +92,12 @@ export const ASSETS: Record<string, AssetConfig> = {
     symbol: "WTI",
     category: "Commodities",
     fetchFeed: async (rangeDays) => {
-      const range = rangeDays === "1" ? "1mo" : rangeDays === "7" ? "3mo" : "1y";
-      const data = await fetchYahooOhlc("CL=F", range);
+      const data = await fetchYahooOhlc("CL=F", rangeDays);
       if (!data.history.length) throw new Error("No crude oil data");
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "usd", marketCap: null };
     },
   },
   microsoft: {
@@ -159,13 +155,12 @@ export const ASSETS: Record<string, AssetConfig> = {
     symbol: "DAX",
     category: "Stocks",
     fetchFeed: async (rangeDays) => {
-      const range = rangeDays === "1" ? "1mo" : rangeDays === "7" ? "3mo" : "1y";
-      const data = await fetchYahooOhlc("^GDAXI", range);
+      const data = await fetchYahooOhlc("^GDAXI", rangeDays);
       if (!data.history.length) throw new Error("No DAX data");
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "usd", marketCap: null };
     },
   },
   bnb: {
@@ -230,13 +225,12 @@ export const ASSETS: Record<string, AssetConfig> = {
     symbol: "PL=F",
     category: "Precious Metals",
     fetchFeed: async (rangeDays) => {
-      const range = rangeDays === "1" ? "1mo" : rangeDays === "7" ? "3mo" : "1y";
-      const data = await fetchYahooOhlc("PL=F", range);
+      const data = await fetchYahooOhlc("PL=F", rangeDays);
       if (!data.history.length) throw new Error("No platinum data");
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "usd", marketCap: null };
     },
   },
   palladium: {
@@ -245,13 +239,12 @@ export const ASSETS: Record<string, AssetConfig> = {
     symbol: "PA=F",
     category: "Precious Metals",
     fetchFeed: async (rangeDays) => {
-      const range = rangeDays === "1" ? "1mo" : rangeDays === "7" ? "3mo" : "1y";
-      const data = await fetchYahooOhlc("PA=F", range);
+      const data = await fetchYahooOhlc("PA=F", rangeDays);
       if (!data.history.length) throw new Error("No palladium data");
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "usd", marketCap: null };
     },
   },
   copper: {
@@ -260,13 +253,12 @@ export const ASSETS: Record<string, AssetConfig> = {
     symbol: "HG=F",
     category: "Commodities",
     fetchFeed: async (rangeDays) => {
-      const range = rangeDays === "1" ? "1mo" : rangeDays === "7" ? "3mo" : "1y";
-      const data = await fetchYahooOhlc("HG=F", range);
+      const data = await fetchYahooOhlc("HG=F", rangeDays);
       if (!data.history.length) throw new Error("No copper data");
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "usd", marketCap: null };
     },
   },
   netflix: {
@@ -340,13 +332,12 @@ export const ASSETS: Record<string, AssetConfig> = {
     symbol: "TNX",
     category: "Commodities",
     fetchFeed: async (rangeDays) => {
-      const range = rangeDays === "1" ? "1mo" : rangeDays === "7" ? "3mo" : "1y";
-      const data = await fetchYahooOhlc("^TNX", range);
+      const data = await fetchYahooOhlc("^TNX", rangeDays);
       if (!data.history.length) throw new Error("No treasury data");
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "usd", marketCap: null };
     },
   },
   usdollar: {
@@ -355,13 +346,12 @@ export const ASSETS: Record<string, AssetConfig> = {
     symbol: "DXY",
     category: "Commodities",
     fetchFeed: async (rangeDays) => {
-      const range = rangeDays === "1" ? "1mo" : rangeDays === "7" ? "3mo" : "1y";
-      const data = await fetchYahooOhlc("^DXY", range);
+      const data = await fetchYahooOhlc("^DXY", rangeDays);
       if (!data.history.length) throw new Error("No dollar index data");
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "usd", marketCap: null };
     },
   },
   // Commodities
@@ -371,13 +361,12 @@ export const ASSETS: Record<string, AssetConfig> = {
     symbol: "NG",
     category: "Commodities",
     fetchFeed: async (rangeDays) => {
-      const range = rangeDays === "1" ? "1mo" : rangeDays === "7" ? "3mo" : "1y";
-      const data = await fetchYahooOhlc("NG=F", range);
+      const data = await fetchYahooOhlc("NG=F", rangeDays);
       if (!data.history.length) throw new Error("No natural gas data");
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "usd", marketCap: null };
     },
   },
   brentcrudeoil: {
@@ -386,13 +375,12 @@ export const ASSETS: Record<string, AssetConfig> = {
     symbol: "BRENT",
     category: "Commodities",
     fetchFeed: async (rangeDays) => {
-      const range = rangeDays === "1" ? "1mo" : rangeDays === "7" ? "3mo" : "1y";
-      const data = await fetchYahooOhlc("BZ=F", range);
+      const data = await fetchYahooOhlc("BZ=F", rangeDays);
       if (!data.history.length) throw new Error("No brent crude data");
       const latestPrice = data.history[data.history.length - 1];
       const previousPrice = data.history[data.history.length - 2] || latestPrice;
       const change24h = ((latestPrice.p - previousPrice.p) / previousPrice.p) * 100;
-      return { ...data, price: latestPrice.p, change24h, volumeUnit: "USD", marketCap: null };
+      return { ...data, price: latestPrice.p, change24h, volumeUnit: "usd", marketCap: null };
     },
   },
 };

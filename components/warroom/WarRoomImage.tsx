@@ -35,7 +35,6 @@ const SLUG_TO_IMAGE_KEY: Record<string, string> = {
   visa: "V",
   mastercard: "MA",
   walmart: "WMT",
-  nvidia: "NVDA",
   silver: "SILVER",
   platinum: "PLATINUM",
   bnb: "BNB",

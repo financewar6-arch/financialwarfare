@@ -111,11 +111,11 @@ export async function fetchBinanceOHLCV(assetSymbol: string, rangeDays: string):
 
     // Convert to OHLC points
     const ohlcPoints: OhlcPoint[] = klines.map((k) => ({
+      t: k[0], // Timestamp
       o: parseFloat(k[1]), // Open
       h: parseFloat(k[2]), // High
       l: parseFloat(k[3]), // Low
       c: parseFloat(k[4]), // Close
-      v: parseFloat(k[5]), // Volume
     }));
 
     // Get current price (latest close)
@@ -137,7 +137,7 @@ export async function fetchBinanceOHLCV(assetSymbol: string, rangeDays: string):
       ohlc: ohlcPoints,
       history,
       volume24h: parseFloat(klines[klines.length - 1][7]), // Quote asset volume
-      volumeUnit: "USD",
+      volumeUnit: "usd",
       marketCap: null, // Binance doesn't provide market cap in OHLC endpoint
     };
   } catch (error) {
