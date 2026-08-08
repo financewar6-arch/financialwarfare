@@ -4,8 +4,6 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  output: 'export',
-  distDir: '.next',
 };
 
 export default nextConfig;
