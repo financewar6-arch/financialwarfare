@@ -1,0 +1,69 @@
+name: Daily Financial Warfare Pipeline
+
+on:
+  # Run daily at 6 AM ET (when market opens)
+  schedule:
+    - cron: "0 10 * * 1-5" # 10 AM UTC = 6 AM ET (Mon-Fri only)
+
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Step 1 - Fetch Top Stories
+        run: |
+          curl -X GET "${{ secrets.SITE_URL }}/api/pipeline/stories?topCount=5&lookbackHours=16" \
+            -H "Content-Type: application/json" \
+            -o stories.json
+          cat stories.json
+
+      - name: Step 2 - Generate Scripts
+        run: |
+          STORIES=$(cat stories.json | jq '.stories')
+          curl -X POST "${{ secrets.SITE_URL }}/api/pipeline/generate-scripts" \
+            -H "Content-Type: application/json" \
+            -d "{\"stories\": $STORIES}" \
+            -o scripts.json
+          cat scripts.json
+
+      - name: Step 3 - Create Content Package
+        run: |
+          STORIES=$(cat stories.json | jq '.stories')
+          SCRIPTS=$(cat scripts.json | jq '.scripts')
+          curl -X POST "${{ secrets.SITE_URL }}/api/pipeline/packages" \
+            -H "Content-Type: application/json" \
+            -d "{\"action\": \"create\", \"stories\": $STORIES, \"scripts\": $SCRIPTS, \"lookbackHours\": 16}" \
+            -o package.json
+          cat package.json
+
+      - name: Step 4 - Notify User
+        if: always()
+        run: |
+          PACKAGE=$(cat package.json | jq -r '.package.id // "ERROR"')
+          STATUS=$(cat package.json | jq -r '.package.status // "failed"')
+          echo "✓ Pipeline completed"
+          echo "📦 Package ID: $PACKAGE"
+          echo "📊 Status: $STATUS"
+          echo ""
+          echo "Next steps:"
+          echo "1. Open dashboard: ${{ secrets.SITE_URL }}/admin/pipeline/review-scripts"
+          echo "2. Approve scripts for all 5 platforms"
+          echo "3. Create videos in CapCut or video tool"
+          echo "4. Upload to publishing queue"
+          echo "5. Click 'Publish' to go live on YouTube, TikTok, Instagram, LinkedIn, Twitter"
+
+      - name: Collect Analytics
+        if: always()
+        run: |
+          curl -X GET "${{ secrets.SITE_URL }}/api/pipeline/analytics?action=summary" \
+            -H "Content-Type: application/json" \
+            -o analytics.json
+          echo "📊 Latest analytics:"
+          cat analytics.json | jq '.summary'
