@@ -90,12 +90,12 @@ const typewriterStyles = `
   .delay-3 { animation-delay: 1.8s; opacity: 0; }
   .videos-market-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 24px;
   }
-  @media (min-width: 768px) {
+  @media (max-width: 640px) {
     .videos-market-grid {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
     }
   }
 `;
