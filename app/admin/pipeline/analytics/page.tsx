@@ -160,7 +160,7 @@ export default function AnalyticsDashboard() {
             </h2>
 
             {topVideos.length === 0 ? (
-              <div style={{ textAlign: "center", color: palette.paperDim", padding: "40px 20px" }}>
+              <div style={{ textAlign: "center", color: palette.paperDim, padding: "40px 20px" }}>
                 <p>Loading...</p>
               </div>
             ) : (
