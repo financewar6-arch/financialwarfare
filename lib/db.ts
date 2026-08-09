@@ -349,6 +349,50 @@ export function getVideosByMarketEvent(marketEventId: string): VideoMetadata[] {
   return Array.from(metadata.values()).filter((v) => v.marketEventId === marketEventId);
 }
 
+export function savePublishedVideos(videos: Partial<VideoMetadata>[]): void {
+  const metadata = loadVideoMetadata();
+
+  videos.forEach((video) => {
+    const id = video.id || `vid-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const now = Date.now();
+
+    const fullVideo: VideoMetadata = {
+      id,
+      contentQueueId: video.contentQueueId || id,
+      marketEventId: video.marketEventId || id,
+      scriptId: video.scriptId || id,
+      title: video.title || "Published Video",
+      description: video.description || "",
+      duration: video.duration || 60,
+      tags: video.tags || [],
+      thumbnail: video.thumbnail || {
+        url: `https://img.youtube.com/vi/${id}/maxresdefault.jpg`,
+        generatedAt: now,
+        method: "frame_extract",
+      },
+      videoUrl: video.videoUrl || "",
+      videoSize: video.videoSize || 0,
+      format: video.format || "mp4",
+      resolution: video.resolution || "1080p",
+      fps: video.fps || 30,
+      platforms: video.platforms || {
+        youtube: {
+          published: true,
+          url: `https://youtube.com/watch?v=${id}`,
+          publishedAt: now,
+          engagementMetrics: { views: 0, likes: 0, shares: 0, comments: 0 },
+        },
+      },
+      generatedAt: now,
+      expiresAt: now + 30 * 24 * 60 * 60 * 1000,
+    };
+
+    metadata.set(id, fullVideo);
+  });
+
+  saveVideoMetadata(metadata);
+}
+
 export function getLatestVideos(limit: number = 5): VideoMetadata[] {
   const metadata = loadVideoMetadata();
   return Array.from(metadata.values())

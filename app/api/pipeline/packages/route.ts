@@ -186,6 +186,33 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
+
+      // Store published videos in database for home page display
+      try {
+        const { savePublishedVideos } = await import("@/lib/db");
+
+        // Create video records from the package
+        const videoRecords = pkg.stories.slice(0, 3).map((story, idx) => ({
+          id: `vid-${pkg.id}-${idx}`,
+          title: story.title,
+          description: story.description || story.title,
+          assetSymbol: story.mentionedAssets?.[0] || "MARKET",
+          assetName: story.mentionedAssets?.[0] || "Market",
+          videoUrl: pkg.videoIds?.youtube || `https://youtube.com/watch?v=${pkg.id}-${idx}`,
+          thumbnailUrl: `https://img.youtube.com/vi/${pkg.id}-${idx}/maxresdefault.jpg`,
+          duration: 60,
+          publishedAt: Date.now(),
+          platforms: ["youtube", "tiktok", "instagram", "linkedin", "twitter", "snapchat"],
+          priceChange: 2.5,
+          viewCount: 0,
+          likeCount: 0,
+        }));
+
+        await savePublishedVideos(videoRecords);
+      } catch (error) {
+        console.error("Failed to save published videos to database:", error);
+      }
+
       const updated = publishPackage(pkg);
       packageStore.set(packageId, updated);
       return NextResponse.json({

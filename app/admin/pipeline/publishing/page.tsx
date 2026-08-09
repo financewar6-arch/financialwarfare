@@ -82,7 +82,8 @@ export default function PublishingPage() {
           : c
       )
     );
-    setMessage(`✓ Video URL updated for "${currentItem?.title}"`);
+    setVideoUrlInput(""); // Clear input after saving
+    setMessage(`✓ Video URL updated. Ready to publish!`);
   };
 
   const publishContent = async (packageId: string) => {
