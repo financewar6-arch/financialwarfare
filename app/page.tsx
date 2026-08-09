@@ -322,219 +322,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Sunday Outlook Featured Section */}
-      {!outlookLoading && outlooks.length > 0 && (
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px 60px" }}>
-          <div style={{ borderTop: `1px solid ${palette.hairline}`, paddingTop: "60px" }}>
-            {/* Featured Article (Latest) - Click to view details, CTA opens Substack in new tab */}
-            <Link href={`/sunday-outlook/${outlooks[0].slug}`} style={{ textDecoration: "none", color: "inherit" }}>
-              <div style={{ cursor: "pointer", display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "48px", alignItems: "start", marginBottom: "60px", transition: "all 0.3s ease" }}
-                onMouseEnter={(e) => {
-                  const img = (e.currentTarget as HTMLElement).querySelector('img');
-                  if (img) (img as HTMLElement).style.transform = "scale(1.02)";
-                }
-                }
-                onMouseLeave={(e) => {
-                  const img = (e.currentTarget as HTMLElement).querySelector('img');
-                  if (img) (img as HTMLElement).style.transform = "scale(1)";
-                }
-                }>
-                {/* Left: Image */}
-                {outlooks[0].coverImage && (
-                  <div style={{ position: "relative", overflow: "hidden" }}>
-                    <img
-                      src={outlooks[0].coverImage}
-                      alt={outlooks[0].title}
-                      style={{
-                        width: "100%",
-                        aspectRatio: "4/3",
-                        objectFit: "cover",
-                        borderRadius: "8px",
-                        boxShadow: `0 20px 40px ${palette.bg}66, 0 0 1px ${palette.hairline}`,
-                        transition: "transform 0.3s ease",
-                      }}
-                    />
-                  </div>
-                )}
-
-                {/* Right: Content */}
-                <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                  <div style={{ color: palette.amber, fontSize: "0.7rem", fontWeight: 700, letterSpacing: "1.5px", marginBottom: "16px", textTransform: "uppercase" }}>
-                    📰 Sunday Outlook
-                  </div>
-
-                  <h2
-                    style={{
-                      fontSize: "2rem",
-                      fontFamily: "var(--font-header)",
-                      fontWeight: 700,
-                      marginBottom: "20px",
-                      lineHeight: 1.25,
-                      letterSpacing: "-0.5px",
-                    }}
-                  >
-                    {outlooks[0].title}
-                  </h2>
-
-                  <div style={{ display: "flex", gap: "20px", marginBottom: "24px", color: palette.paperDim, fontSize: "0.85rem", fontWeight: 500 }}>
-                    <span style={{ fontWeight: 600 }}>{outlooks[0].author}</span>
-                    <span>•</span>
-                    <span>
-                      {new Date(outlooks[0].publishedAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </span>
-                  </div>
-
-                  <p style={{ fontSize: "0.95rem", lineHeight: 1.8, color: palette.paperDim, marginBottom: "32px", fontWeight: 400 }}>
-                    {outlooks[0].summary}
-                  </p>
-
-                  <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-                    <div style={{ color: palette.blue, fontWeight: 600, display: "inline-block", fontSize: "0.95rem", transition: "all 0.2s ease", cursor: "pointer" }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.color = palette.amber;
-                        (e.currentTarget as HTMLElement).style.transform = "translateX(4px)";
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.color = palette.blue;
-                        (e.currentTarget as HTMLElement).style.transform = "translateX(0)";
-                      }}>
-                      Read Full Outlook →
-                    </div>
-
-                    {/* Direct Substack link opens in new tab */}
-                    <a href={outlooks[0].substackUrl} target="_blank" rel="noopener noreferrer" style={{
-                      color: palette.amber,
-                      fontWeight: 600,
-                      fontSize: "0.85rem",
-                      textDecoration: "none",
-                      transition: "all 0.2s ease",
-                      padding: "4px 8px",
-                      border: `1px solid ${palette.amber}`,
-                      borderRadius: "3px"
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.background = palette.amber;
-                      (e.currentTarget as HTMLElement).style.color = palette.bg;
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.background = "transparent";
-                      (e.currentTarget as HTMLElement).style.color = palette.amber;
-                    }}>
-                      Open on Substack ↗
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </Link>
-
-            {/* Previous Article (if exists) */}
-            {outlooks.length > 1 && (
-              <div style={{ paddingTop: "48px", borderTop: `1px solid ${palette.hairline}` }}>
-                <h3 style={{ color: palette.amber, fontSize: "0.7rem", fontWeight: 700, marginBottom: "28px", letterSpacing: "1.5px", textTransform: "uppercase" }}>
-                  📖 Previous Outlook
-                </h3>
-                <Link href={`/sunday-outlook/${outlooks[1].slug}`} style={{ textDecoration: "none", color: "inherit" }}>
-                  <div style={{ cursor: "pointer", display: "grid", gridTemplateColumns: "240px 1fr", gap: "32px", alignItems: "start", transition: "all 0.2s ease", padding: "16px", borderRadius: "8px", background: `${palette.panel}33` }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.background = `${palette.panel}66`;
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.background = `${palette.panel}33`;
-                    }}>
-                    {/* Thumbnail */}
-                    {outlooks[1].coverImage && (
-                      <div style={{ position: "relative", overflow: "hidden" }}>
-                        <img
-                          src={outlooks[1].coverImage}
-                          alt={outlooks[1].title}
-                          style={{
-                            width: "100%",
-                            aspectRatio: "4/3",
-                            objectFit: "cover",
-                            borderRadius: "6px",
-                            boxShadow: `0 8px 20px ${palette.bg}44`,
-                            transition: "transform 0.3s ease",
-                          }}
-                        />
-                      </div>
-                    )}
-
-                    {/* Content */}
-                    <div>
-                      <h4 style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: "12px", lineHeight: 1.35, letterSpacing: "-0.3px" }}>
-                        {outlooks[1].title}
-                      </h4>
-
-                      <div style={{ display: "flex", gap: "16px", marginBottom: "16px", color: palette.paperDim, fontSize: "0.8rem", fontWeight: 500 }}>
-                        <span>{outlooks[1].author}</span>
-                        <span>•</span>
-                        <span>
-                          {new Date(outlooks[1].publishedAt).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                          })}
-                        </span>
-                      </div>
-
-                      <p style={{ fontSize: "0.9rem", lineHeight: 1.6, color: palette.paperDim, marginBottom: "16px", fontWeight: 400 }}>
-                        {outlooks[1].summary.substring(0, 150)}...
-                      </p>
-
-                      <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                        <div style={{ color: palette.blue, fontSize: "0.85rem", fontWeight: 600, transition: "all 0.2s ease", cursor: "pointer" }}
-                          onMouseEnter={(e) => {
-                            (e.currentTarget as HTMLElement).style.color = palette.amber;
-                            (e.currentTarget as HTMLElement).style.transform = "translateX(4px)";
-                          }}
-                          onMouseLeave={(e) => {
-                            (e.currentTarget as HTMLElement).style.color = palette.blue;
-                            (e.currentTarget as HTMLElement).style.transform = "translateX(0)";
-                          }}>
-                          Read Outlook →
-                        </div>
-
-                        {/* Direct Substack link opens in new tab */}
-                        <a href={outlooks[1].substackUrl} target="_blank" rel="noopener noreferrer" style={{
-                          color: palette.amber,
-                          fontWeight: 600,
-                          fontSize: "0.75rem",
-                          textDecoration: "none",
-                          transition: "all 0.2s ease",
-                          padding: "2px 6px",
-                          border: `1px solid ${palette.amber}`,
-                          borderRadius: "3px"
-                        }}
-                        onMouseEnter={(e) => {
-                          (e.currentTarget as HTMLElement).style.background = palette.amber;
-                          (e.currentTarget as HTMLElement).style.color = palette.bg;
-                        }}
-                        onMouseLeave={(e) => {
-                          (e.currentTarget as HTMLElement).style.background = "transparent";
-                          (e.currentTarget as HTMLElement).style.color = palette.amber;
-                        }}>
-                          ↗
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            )}
-
-            {/* All Outlooks Link */}
-            <div style={{ marginTop: "32px", paddingTop: "32px", borderTop: `1px solid ${palette.hairline}` }}>
-              <Link href="/sunday-outlook" style={{ color: palette.blue, textDecoration: "none", fontSize: "0.9rem", fontWeight: 600 }}>
-                View All Outlooks →
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* YouTube Videos + What's Moving the Market Section */}
       <div className="videos-market-grid" style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px", marginBottom: "40px" }}>
         {/* Left: YouTube Videos / Market Shorts */}
@@ -846,6 +633,215 @@ export default function Home() {
         </div>
 
       </div>
+
+      {/* Sunday Outlook Featured Section */}
+      {!outlookLoading && outlooks.length > 0 && (
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px 60px" }}>
+          <div style={{ borderTop: `1px solid ${palette.hairline}`, paddingTop: "60px" }}>
+            {/* Featured Article (Latest) - Click to view details, CTA opens Substack in new tab */}
+            <div style={{ cursor: "pointer", display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "48px", alignItems: "start", marginBottom: "60px", transition: "all 0.3s ease" }}
+              onClick={() => window.location.href = `/sunday-outlook/${outlooks[0].slug}`}
+              onMouseEnter={(e) => {
+                const img = (e.currentTarget as HTMLElement).querySelector('img');
+                if (img) (img as HTMLElement).style.transform = "scale(1.02)";
+              }}
+              onMouseLeave={(e) => {
+                const img = (e.currentTarget as HTMLElement).querySelector('img');
+                if (img) (img as HTMLElement).style.transform = "scale(1)";
+              }}>
+              {/* Left: Image */}
+              {outlooks[0].coverImage && (
+                <div style={{ position: "relative", overflow: "hidden" }}>
+                  <img
+                    src={outlooks[0].coverImage}
+                    alt={outlooks[0].title}
+                    style={{
+                      width: "100%",
+                      aspectRatio: "4/3",
+                      objectFit: "cover",
+                      borderRadius: "8px",
+                      boxShadow: `0 20px 40px ${palette.bg}66, 0 0 1px ${palette.hairline}`,
+                      transition: "transform 0.3s ease",
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* Right: Content */}
+              <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <div style={{ color: palette.amber, fontSize: "0.7rem", fontWeight: 700, letterSpacing: "1.5px", marginBottom: "16px", textTransform: "uppercase" }}>
+                  📰 Sunday Outlook
+                </div>
+
+                <h2
+                  style={{
+                    fontSize: "2rem",
+                    fontFamily: "var(--font-header)",
+                    fontWeight: 700,
+                    marginBottom: "20px",
+                    lineHeight: 1.25,
+                    letterSpacing: "-0.5px",
+                  }}
+                >
+                  {outlooks[0].title}
+                </h2>
+
+                <div style={{ display: "flex", gap: "20px", marginBottom: "24px", color: palette.paperDim, fontSize: "0.85rem", fontWeight: 500 }}>
+                  <span style={{ fontWeight: 600 }}>{outlooks[0].author}</span>
+                  <span>•</span>
+                  <span>
+                    {new Date(outlooks[0].publishedAt).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </span>
+                </div>
+
+                <p style={{ fontSize: "0.95rem", lineHeight: 1.8, color: palette.paperDim, marginBottom: "32px", fontWeight: 400 }}>
+                  {outlooks[0].summary}
+                </p>
+
+                <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                  <div style={{ color: palette.blue, fontWeight: 600, display: "inline-block", fontSize: "0.95rem", transition: "all 0.2s ease", cursor: "pointer" }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.color = palette.amber;
+                      (e.currentTarget as HTMLElement).style.transform = "translateX(4px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.color = palette.blue;
+                      (e.currentTarget as HTMLElement).style.transform = "translateX(0)";
+                    }}>
+                    Read Full Outlook →
+                  </div>
+
+                  {/* Direct Substack link opens in new tab */}
+                  <a href={outlooks[0].substackUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{
+                    color: palette.amber,
+                    fontWeight: 600,
+                    fontSize: "0.85rem",
+                    textDecoration: "none",
+                    transition: "all 0.2s ease",
+                    padding: "4px 8px",
+                    border: `1px solid ${palette.amber}`,
+                    borderRadius: "3px"
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = palette.amber;
+                    (e.currentTarget as HTMLElement).style.color = palette.bg;
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = "transparent";
+                    (e.currentTarget as HTMLElement).style.color = palette.amber;
+                  }}>
+                    Open on Substack ↗
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Previous Article (if exists) */}
+            {outlooks.length > 1 && (
+              <div style={{ paddingTop: "48px", borderTop: `1px solid ${palette.hairline}` }}>
+                <h3 style={{ color: palette.amber, fontSize: "0.7rem", fontWeight: 700, marginBottom: "28px", letterSpacing: "1.5px", textTransform: "uppercase" }}>
+                  📖 Previous Outlook
+                </h3>
+                <div style={{ cursor: "pointer", display: "grid", gridTemplateColumns: "240px 1fr", gap: "32px", alignItems: "start", transition: "all 0.2s ease", padding: "16px", borderRadius: "8px", background: `${palette.panel}33` }}
+                  onClick={() => window.location.href = `/sunday-outlook/${outlooks[1].slug}`}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = `${palette.panel}66`;
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = `${palette.panel}33`;
+                  }}>
+                  {/* Thumbnail */}
+                  {outlooks[1].coverImage && (
+                    <div style={{ position: "relative", overflow: "hidden" }}>
+                      <img
+                        src={outlooks[1].coverImage}
+                        alt={outlooks[1].title}
+                        style={{
+                          width: "100%",
+                          aspectRatio: "4/3",
+                          objectFit: "cover",
+                          borderRadius: "6px",
+                          boxShadow: `0 8px 20px ${palette.bg}44`,
+                          transition: "transform 0.3s ease",
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Content */}
+                  <div>
+                    <h4 style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: "12px", lineHeight: 1.35, letterSpacing: "-0.3px" }}>
+                      {outlooks[1].title}
+                    </h4>
+
+                    <div style={{ display: "flex", gap: "16px", marginBottom: "16px", color: palette.paperDim, fontSize: "0.8rem", fontWeight: 500 }}>
+                      <span>{outlooks[1].author}</span>
+                      <span>•</span>
+                      <span>
+                        {new Date(outlooks[1].publishedAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </span>
+                    </div>
+
+                    <p style={{ fontSize: "0.9rem", lineHeight: 1.6, color: palette.paperDim, marginBottom: "16px", fontWeight: 400 }}>
+                      {outlooks[1].summary.substring(0, 150)}...
+                    </p>
+
+                    <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                      <div style={{ color: palette.blue, fontSize: "0.85rem", fontWeight: 600, transition: "all 0.2s ease", cursor: "pointer" }}
+                        onMouseEnter={(e) => {
+                          (e.currentTarget as HTMLElement).style.color = palette.amber;
+                          (e.currentTarget as HTMLElement).style.transform = "translateX(4px)";
+                        }}
+                        onMouseLeave={(e) => {
+                          (e.currentTarget as HTMLElement).style.color = palette.blue;
+                          (e.currentTarget as HTMLElement).style.transform = "translateX(0)";
+                        }}>
+                        Read Outlook →
+                      </div>
+
+                      {/* Direct Substack link opens in new tab */}
+                      <a href={outlooks[1].substackUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{
+                        color: palette.amber,
+                        fontWeight: 600,
+                        fontSize: "0.75rem",
+                        textDecoration: "none",
+                        transition: "all 0.2s ease",
+                        padding: "2px 6px",
+                        border: `1px solid ${palette.amber}`,
+                        borderRadius: "3px"
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.background = palette.amber;
+                        (e.currentTarget as HTMLElement).style.color = palette.bg;
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.background = "transparent";
+                        (e.currentTarget as HTMLElement).style.color = palette.amber;
+                      }}>
+                        ↗
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* All Outlooks Link */}
+            <div style={{ marginTop: "32px", paddingTop: "32px", borderTop: `1px solid ${palette.hairline}` }}>
+              <Link href="/sunday-outlook" style={{ color: palette.blue, textDecoration: "none", fontSize: "0.9rem", fontWeight: 600 }}>
+                View All Outlooks →
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Asset Grid by Category */}
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px" }}>
