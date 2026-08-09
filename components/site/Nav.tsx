@@ -23,6 +23,7 @@ export function Nav() {
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
   const [searchInput, setSearchInput] = useState("");
   const [searchResults, setSearchResults] = useState<(typeof ASSETS)[keyof typeof ASSETS][]>([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const categories = Array.from(new Set(Object.values(ASSETS).map((a) => a.category))).sort();
   const assetsByCategory = categories.reduce(
@@ -58,8 +59,33 @@ export function Nav() {
         />
       </Link>
 
-      {/* Left: Nav Links */}
-      <div style={{ display: "flex", gap: "24px" }}>
+      {/* Hamburger Menu - Mobile Only */}
+      <button
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        style={{
+          display: "none",
+          "@media (max-width: 768px)": { display: "flex" },
+          background: "transparent",
+          border: "none",
+          cursor: "pointer",
+          flexDirection: "column",
+          gap: "6px",
+          marginLeft: "auto",
+        } as any}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.opacity = "0.8";
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.opacity = "1";
+        }}
+      >
+        <div style={{ width: "24px", height: "2px", background: palette.paper }}></div>
+        <div style={{ width: "24px", height: "2px", background: palette.paper }}></div>
+        <div style={{ width: "24px", height: "2px", background: palette.paper }}></div>
+      </button>
+
+      {/* Left: Nav Links - Desktop Only */}
+      <div style={{ display: "flex", gap: "24px", "@media (max-width: 768px)": { display: "none" } } as any}>
       {NAV_ITEMS.map((item) => (
         <div
           key={item.href}
@@ -234,6 +260,99 @@ export function Nav() {
           SIGN IN
         </button>
       </div>
+
+      {/* Mobile Menu - Expands below navbar */}
+      {mobileMenuOpen && (
+        <div
+          style={{
+            position: "absolute",
+            top: "100%",
+            left: 0,
+            right: 0,
+            background: palette.panel,
+            borderBottom: `1px solid ${palette.hairline}`,
+            display: "flex",
+            flexDirection: "column",
+            "@media (min-width: 768px)": { display: "none" },
+          } as any}
+        >
+          {NAV_ITEMS.map((item) => (
+            <div key={item.href}>
+              <Link
+                href={item.href}
+                onClick={() => setMobileMenuOpen(false)}
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "0.75rem",
+                  letterSpacing: "0.08em",
+                  color: palette.paperDim,
+                  textDecoration: "none",
+                  display: "block",
+                  padding: "12px 20px",
+                  borderBottom: `1px solid ${palette.hairline}`,
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLAnchorElement).style.background = `${palette.bg}99`;
+                  (e.currentTarget as HTMLAnchorElement).style.color = palette.amber;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
+                  (e.currentTarget as HTMLAnchorElement).style.color = palette.paperDim;
+                }}
+              >
+                {item.label}
+              </Link>
+
+              {/* Mobile Submenu for WAR ROOMS */}
+              {item.hasSubmenu && (
+                <div style={{ background: palette.bg, paddingLeft: "10px" }}>
+                  {categories.map((category) => (
+                    <div key={category}>
+                      <div
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.6rem",
+                          color: palette.amberDim,
+                          letterSpacing: "0.08em",
+                          padding: "8px 16px 4px",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        {category}
+                      </div>
+                      {assetsByCategory[category].map((asset) => (
+                        <Link
+                          key={asset.slug}
+                          href={`/war-room/${asset.slug}`}
+                          onClick={() => setMobileMenuOpen(false)}
+                          style={{
+                            fontFamily: "var(--font-mono)",
+                            fontSize: "0.65rem",
+                            color: palette.paperDim,
+                            textDecoration: "none",
+                            display: "block",
+                            padding: "6px 20px",
+                            transition: "all 0.2s",
+                          }}
+                          onMouseEnter={(e) => {
+                            (e.currentTarget as HTMLAnchorElement).style.color = palette.amber;
+                          }}
+                          onMouseLeave={(e) => {
+                            (e.currentTarget as HTMLAnchorElement).style.color = palette.paperDim;
+                          }}
+                        >
+                          {asset.name}
+                        </Link>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
