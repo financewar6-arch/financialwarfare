@@ -13,7 +13,7 @@ const NAV_ITEMS = [
   { href: "/war-room", label: "WAR ROOMS", hasSubmenu: true },
   { href: "/news", label: "NEWS" },
   { href: "/markets", label: "MARKETS" },
-  { href: "/luxury", label: "LUXURY" },
+  { href: "/luxury", label: "LUXURY / ALTERNATIVE ASSETS" },
   { href: "/about", label: "ABOUT" },
   { href: "/contact", label: "CONTACT" },
 ];

@@ -11,6 +11,7 @@ export default function LuxuryPage() {
   const [assets, setAssets] = useState<LuxuryAsset[]>([]);
   const [featured, setFeatured] = useState<LuxuryAsset[]>([]);
   const [loading, setLoading] = useState(true);
+  const [titleHovered, setTitleHovered] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,7 +35,24 @@ export default function LuxuryPage() {
       {/* Hero */}
       <div style={{ background: `linear-gradient(135deg, ${palette.panel} 0%, ${palette.bg} 100%)`, padding: "80px 20px", textAlign: "center", borderBottom: `1px solid ${palette.hairline}` }}>
         <div style={{ maxWidth: "900px", margin: "0 auto" }}>
-          <h1 style={{ fontFamily: "var(--font-header)", fontSize: "3.5rem", fontWeight: 700, marginBottom: "16px" }}>Luxury Market Intelligence</h1>
+          <h1
+            style={{
+              fontFamily: "var(--font-header)",
+              fontSize: "3.5rem",
+              fontWeight: 700,
+              marginBottom: "16px",
+              cursor: "pointer",
+              transition: "all 0.3s ease",
+              color: titleHovered ? palette.amber : palette.paper,
+              transform: titleHovered ? "scale(1.02)" : "scale(1)",
+              textShadow: titleHovered ? `0 0 20px ${palette.amber}44` : "none",
+            }}
+            onMouseEnter={() => setTitleHovered(true)}
+            onMouseLeave={() => setTitleHovered(false)}
+            onClick={() => window.location.href = "/luxury"}
+          >
+            Luxury Market Intelligence
+          </h1>
           <p style={{ fontSize: "1.2rem", color: palette.paperDim, lineHeight: 1.8 }}>Track watches, cars, diamonds and alternative assets with real-time market intelligence.</p>
         </div>
       </div>
