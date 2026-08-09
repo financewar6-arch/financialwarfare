@@ -35,6 +35,18 @@ interface Short {
   newsBrief?: string; // Full 1-minute news brief for typewriter display
 }
 
+interface SundayOutlook {
+  id: string;
+  slug: string;
+  title: string;
+  author: string;
+  publishedAt: number;
+  coverImage?: string;
+  summary: string;
+  substackUrl: string;
+  featured: boolean;
+}
+
 // Typewriter Text Component - reveals text character by character
 function TypewriterDisplay({ text, duration }: { text: string; duration: number }) {
   const [displayText, setDisplayText] = useState("");
@@ -106,6 +118,8 @@ export default function Home() {
   const [newsLoading, setNewsLoading] = useState(true);
   const [shorts, setShorts] = useState<Short[]>([]);
   const [shortsLoading, setShortsLoading] = useState(true);
+  const [outlook, setOutlook] = useState<SundayOutlook | null>(null);
+  const [outlookLoading, setOutlookLoading] = useState(true);
   const [searchInput, setSearchInput] = useState("");
   const [searchResults, setSearchResults] = useState<(typeof ASSETS)[keyof typeof ASSETS][]>([]);
   const assets = Object.values(ASSETS);
@@ -160,6 +174,17 @@ export default function Home() {
         setShortsLoading(false);
       })
       .catch(() => setShortsLoading(false));
+
+    // Fetch featured Sunday Outlook
+    fetch("/api/sunday-outlook?featured=true")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.outlook) {
+          setOutlook(data.outlook);
+        }
+        setOutlookLoading(false);
+      })
+      .catch(() => setOutlookLoading(false));
   }, []);
 
   const groupedByCategory = assets.reduce(
@@ -296,6 +321,78 @@ export default function Home() {
           ))}
         </div>
       </div>
+
+      {/* Sunday Outlook Featured Section */}
+      {!outlookLoading && outlook && (
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px 60px" }}>
+          <div style={{ borderTop: `1px solid ${palette.hairline}`, paddingTop: "60px", marginBottom: "60px" }}>
+            <Link href={`/sunday-outlook/${outlook.slug}`} style={{ textDecoration: "none", color: "inherit" }}>
+              <div style={{ cursor: "pointer", display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "40px", alignItems: "start" }}>
+                {/* Left: Image */}
+                {outlook.coverImage && (
+                  <div style={{ position: "relative" }}>
+                    <img
+                      src={outlook.coverImage}
+                      alt={outlook.title}
+                      style={{
+                        width: "100%",
+                        aspectRatio: "4/3",
+                        objectFit: "cover",
+                        borderRadius: "6px",
+                      }}
+                    />
+                  </div>
+                )}
+
+                {/* Right: Content */}
+                <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                  <div style={{ color: palette.amber, fontSize: "0.75rem", fontWeight: 700, letterSpacing: "1px", marginBottom: "12px" }}>
+                    SUNDAY OUTLOOK
+                  </div>
+
+                  <h2
+                    style={{
+                      fontSize: "1.8rem",
+                      fontFamily: "var(--font-header)",
+                      fontWeight: 600,
+                      marginBottom: "12px",
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {outlook.title}
+                  </h2>
+
+                  <div style={{ display: "flex", gap: "16px", marginBottom: "16px", color: palette.paperDim, fontSize: "0.9rem" }}>
+                    <span style={{ fontWeight: 600 }}>{outlook.author}</span>
+                    <span>
+                      {new Date(outlook.publishedAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </span>
+                  </div>
+
+                  <p style={{ fontSize: "0.95rem", lineHeight: 1.7, color: palette.paperDim, marginBottom: "24px" }}>
+                    {outlook.summary}
+                  </p>
+
+                  <div style={{ color: palette.blue, fontWeight: 600, display: "inline-block" }}>
+                    Read Full Outlook →
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* All Outlooks Link */}
+            <div style={{ marginTop: "32px", paddingTop: "32px", borderTop: `1px solid ${palette.hairline}` }}>
+              <Link href="/sunday-outlook" style={{ color: palette.blue, textDecoration: "none", fontSize: "0.9rem", fontWeight: 600 }}>
+                View All Outlooks →
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* YouTube Videos + What's Moving the Market Section */}
       <div className="videos-market-grid" style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px", marginBottom: "40px" }}>
