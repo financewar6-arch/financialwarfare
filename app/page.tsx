@@ -93,7 +93,7 @@ const typewriterStyles = `
     grid-template-columns: 1fr;
     gap: 24px;
   }
-  @media (min-width: 1024px) {
+  @media (min-width: 768px) {
     .videos-market-grid {
       grid-template-columns: 1fr 1fr;
     }
