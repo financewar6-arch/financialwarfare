@@ -94,6 +94,67 @@ export default function ReviewScriptsPage() {
   const currentContent = generatedContent.find((g) => g.storyId === selectedStory);
   const currentScript = currentContent?.scripts.find((s) => s.platform === viewingPlatform);
 
+  const approveAll = async () => {
+    if (!currentContent) return;
+    setLoading(true);
+    setMessage("Approving scripts...");
+    try {
+      const response = await fetch("/api/pipeline/packages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "approve",
+          storyId: currentContent.storyId,
+          scripts: currentContent.scripts,
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setMessage(`✓ Scripts approved for "${currentContent.storyTitle}"`);
+        setTimeout(() => {
+          setSelectedStory(null);
+          setViewingPlatform(null);
+        }, 1500);
+      } else {
+        setMessage("❌ Failed to approve scripts");
+      }
+    } catch (error) {
+      setMessage(`❌ Error: ${String(error)}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const rejectStory = async () => {
+    if (!currentContent) return;
+    setLoading(true);
+    setMessage("Rejecting scripts...");
+    try {
+      const response = await fetch("/api/pipeline/packages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "reject",
+          storyId: currentContent.storyId,
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setMessage(`✓ Scripts rejected for "${currentContent.storyTitle}"`);
+        setTimeout(() => {
+          setSelectedStory(null);
+          setViewingPlatform(null);
+        }, 1500);
+      } else {
+        setMessage("❌ Failed to reject scripts");
+      }
+    } catch (error) {
+      setMessage(`❌ Error: ${String(error)}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div style={{ background: palette.bg, color: palette.paper, minHeight: "100vh", padding: "20px" }}>
       <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
@@ -339,6 +400,8 @@ export default function ReviewScriptsPage() {
                 {/* Action Buttons */}
                 <div style={{ display: "flex", gap: "12px", marginTop: "16px" }}>
                   <button
+                    onClick={approveAll}
+                    disabled={loading}
                     style={{
                       flex: 1,
                       padding: "12px",
@@ -346,13 +409,16 @@ export default function ReviewScriptsPage() {
                       color: palette.bg,
                       border: "none",
                       borderRadius: "4px",
-                      cursor: "pointer",
+                      cursor: loading ? "not-allowed" : "pointer",
                       fontWeight: 600,
+                      opacity: loading ? 0.6 : 1,
                     }}
                   >
-                    ✓ Approve All
+                    {loading ? "Processing..." : "✓ Approve All"}
                   </button>
                   <button
+                    onClick={rejectStory}
+                    disabled={loading}
                     style={{
                       flex: 1,
                       padding: "12px",
@@ -360,11 +426,12 @@ export default function ReviewScriptsPage() {
                       color: palette.bg,
                       border: "none",
                       borderRadius: "4px",
-                      cursor: "pointer",
+                      cursor: loading ? "not-allowed" : "pointer",
                       fontWeight: 600,
+                      opacity: loading ? 0.6 : 1,
                     }}
                   >
-                    ✗ Reject
+                    {loading ? "Processing..." : "✗ Reject"}
                   </button>
                 </div>
               </>
