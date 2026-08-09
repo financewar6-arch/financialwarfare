@@ -1,110 +1,88 @@
-# Automatic Editorial Content Updates
+# Daily Editorial Updates Guide
 
-War room editorial content (Why It Moved, Why It Matters, Risk, Watch Next) can now be automatically generated and updated daily using Claude AI analysis.
+## 🎯 What is This?
 
-## How It Works
+Update war room content daily without touching code:
+- "Why It Moved" - What drove the price today
+- "Why You Should Care" - Impact on your portfolio  
+- "Risk" - What could go wrong
+- "Watch Next" - What to monitor
 
-1. **Editorial Generator** (`lib/generators/editorial-generator.ts`): Uses Claude Opus to generate fresh market analysis for any asset based on its performance and market category.
+---
 
-2. **Editorial Loader** (`lib/editorial-loader.ts`): Loads generated content from `.data/editorial/` directory if available, falling back to static content files in `/content`.
+## 📱 UPDATE VIA ADMIN DASHBOARD (Easiest)
 
-3. **Cron Endpoint** (`app/api/cron/editorial-update/route.ts`): Runs daily (via Vercel Cron or your infrastructure) to regenerate content for all war room assets.
+### Step 1: Access Dashboard
 
-## Setup Instructions
+Go to: `https://yoursite.com/admin/editorial`
 
-### 1. Vercel Cron Configuration
+(Keep this bookmarked!)
 
-Add to `vercel.json`:
+### Step 2: Enter Admin Token
 
-```json
-{
-  "crons": [
-    {
-      "path": "/api/cron/editorial-update",
-      "schedule": "0 8 * * *"
-    }
-  ]
-}
-```
+Token = your `ADMIN_TOKEN` from Render environment
 
-The schedule `"0 8 * * *"` means: **8 AM UTC every day**. Adjust to your preferred time zone.
+### Step 3: Select Asset
 
-### 2. Environment Variables
+- Bitcoin
+- Ethereum
+- Gold
+- Apple
+- S&P 500
+- Nasdaq
 
-Ensure `CRON_SECRET` is set in your environment:
+### Step 4: Fill in Daily Content
 
-```bash
-CRON_SECRET=your-secret-key-here
-```
+Photo Label: "Bitcoin Surges on Institutional Demand"
+Why It Moved: "Large institutional investors entered positions ahead of Bitcoin ETF approval."
+Why You Should Care: "Signals mainstream acceptance and sustained growth potential."
+Risk: "Regulatory uncertainty could trigger sharp pullback."
+Watch Next: "Monitor Fed policy and institutional fund flows."
 
-This protects the cron endpoint from unauthorized calls.
+### Step 5: Click "Update Content"
 
-### 3. Enable for War Rooms
+✅ Done! War room updates instantly.
 
-Update war room pages to use the editorial loader:
+---
 
-```typescript
-import { loadEditorialContent } from "@/lib/editorial-loader";
-import { bitcoinEditorial } from "@/content/bitcoin";
+## ⏰ DAILY WORKFLOW (5 MINUTES)
 
-export default async function BitcoinWarRoomPage() {
-  const asset = ASSETS.bitcoin;
-  const editorial = await loadEditorialContent(asset.slug, bitcoinEditorial);
-  return (
-    <WarRoom 
-      assetSlug={asset.slug} 
-      name={asset.name} 
-      symbol={asset.symbol} 
-      editorial={editorial} 
-    />
-  );
-}
-```
+Morning (Market Open):
+1. Check market news (2 min)
+2. Go to admin dashboard (1 min)
+3. Update 3-5 major assets (2 min)
+4. Done! War rooms show fresh content
 
-Pages using the editorial loader automatically serve generated content when available, falling back to static content.
+---
 
-## How It Updates Daily
+## 📊 WHERE CONTENT APPEARS
 
-1. **Cron triggers** at scheduled time (e.g., 8 AM UTC)
-2. **Editorial generator** creates fresh analysis for all assets
-3. **Content saved** to `.data/editorial/{assetSlug}.json`
-4. **War room pages** detect and load the fresh content on next visit
-5. **Fallback** to static content if generation fails
+Your daily edits show up in war rooms:
+- https://yoursite.com/war-room/bitcoin
+- https://yoursite.com/war-room/gold
+- https://yoursite.com/war-room/apple
+- etc.
 
-## Generated Content Structure
+---
 
-Generated content includes:
-- `photoLabel`: Visual asset description
-- `whyItMoved`: Market mechanism explanation
-- `whyYouShouldCare`: Trading implications
-- `risk`: Potential reversals/risks
-- `watchNext`: Specific monitoring points
+## 💡 TIPS
 
-All analysis is **original** and tailored to current market conditions.
+1. **Be Specific** - "Tech rally on AI optimism" not just "Market is up"
+2. **Be Actionable** - Help investors make decisions
+3. **Be Timely** - Update daily with fresh insights
+4. **Be Concise** - 1-3 sentences per section
+5. **Be Human** - Write naturally
 
-## Manual Trigger
+---
 
-To manually trigger an update:
+## ✨ SUMMARY
 
-```bash
-curl -X GET http://localhost:3000/api/cron/editorial-update \
-  -H "Authorization: Bearer your-cron-secret"
-```
+**DAILY (5 min):**
+→ Read news
+→ Go to admin dashboard
+→ Update assets
+→ Done!
 
-## Fallback Behavior
+No coding. No deployment. Just fresh content every day.
 
-If content generation fails:
-- Cron continues processing remaining assets
-- War rooms display static content from `/content` files
-- Users always see valid analysis (no blank fields)
-
-## Production Considerations
-
-- Claude API calls cost money; adjust cron frequency based on budget
-- Generation takes ~10-15 seconds per asset; consider batch limiting
-- Store generated content in persistent storage (already using `.data/`)
-- Monitor cron execution for failures in Vercel dashboard
-
-## Disabling Auto-Updates
-
-Simply don't add the cron schedule to `vercel.json`. War rooms will always use static editorial content from `/content` files.
+🚀 Your war rooms stay updated constantly!
