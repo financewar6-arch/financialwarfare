@@ -24,6 +24,7 @@ export function Nav() {
   const [searchInput, setSearchInput] = useState("");
   const [searchResults, setSearchResults] = useState<(typeof ASSETS)[keyof typeof ASSETS][]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [warRoomsExpanded, setWarRoomsExpanded] = useState(false);
 
   const categories = Array.from(new Set(Object.values(ASSETS).map((a) => a.category))).sort();
   const assetsByCategory = categories.reduce(
@@ -100,34 +101,63 @@ export function Nav() {
         <div
           key={item.href}
           style={{ position: "relative" }}
-          onMouseEnter={() => item.hasSubmenu && setHoveredMenu(item.href)}
-          onMouseLeave={() => setHoveredMenu(null)}
+          onMouseEnter={() => !item.hasSubmenu && setHoveredMenu(item.href)}
+          onMouseLeave={() => !item.hasSubmenu && setHoveredMenu(null)}
         >
-          <Link
-            href={item.href}
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.65rem",
-              letterSpacing: "0.08em",
-              color: hoveredMenu === item.href ? palette.amber : palette.paperDim,
-              textDecoration: "none",
-              transition: "color 0.2s",
-              display: "inline-block",
-            }}
-            onMouseEnter={(e) => {
-              (e.target as HTMLAnchorElement).style.color = palette.amber;
-            }}
-            onMouseLeave={(e) => {
-              if (hoveredMenu !== item.href) {
-                (e.target as HTMLAnchorElement).style.color = palette.paperDim;
-              }
-            }}
-          >
-            {item.label}
-          </Link>
+          {/* War Rooms: Toggle Button */}
+          {item.hasSubmenu ? (
+            <button
+              onClick={() => setWarRoomsExpanded(!warRoomsExpanded)}
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "0.65rem",
+                letterSpacing: "0.08em",
+                color: warRoomsExpanded ? palette.amber : palette.paperDim,
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                transition: "color 0.2s",
+                display: "inline-flex",
+                gap: "6px",
+                alignItems: "center",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.color = palette.amber;
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.color = warRoomsExpanded ? palette.amber : palette.paperDim;
+              }}
+            >
+              {item.label}
+              <span style={{ fontSize: "0.5rem", lineHeight: 1 }}>{warRoomsExpanded ? "▼" : "▶"}</span>
+            </button>
+          ) : (
+            <Link
+              href={item.href}
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "0.65rem",
+                letterSpacing: "0.08em",
+                color: hoveredMenu === item.href ? palette.amber : palette.paperDim,
+                textDecoration: "none",
+                transition: "color 0.2s",
+                display: "inline-block",
+              }}
+              onMouseEnter={(e) => {
+                (e.target as HTMLAnchorElement).style.color = palette.amber;
+              }}
+              onMouseLeave={(e) => {
+                if (hoveredMenu !== item.href) {
+                  (e.target as HTMLAnchorElement).style.color = palette.paperDim;
+                }
+              }}
+            >
+              {item.label}
+            </Link>
+          )}
 
-          {/* Submenu for WAR ROOMS */}
-          {item.hasSubmenu && hoveredMenu === item.href && (
+          {/* Submenu for WAR ROOMS - Shows when expanded */}
+          {item.hasSubmenu && warRoomsExpanded && (
             <div
               style={{
                 position: "absolute",
@@ -137,8 +167,10 @@ export function Nav() {
                 border: `1px solid ${palette.hairline}`,
                 borderTop: "none",
                 padding: "8px 0",
-                minWidth: "180px",
+                minWidth: "200px",
                 marginTop: "-1px",
+                maxHeight: "400px",
+                overflowY: "auto",
               }}
             >
               {categories.map((category) => (
@@ -159,6 +191,7 @@ export function Nav() {
                     <Link
                       key={asset.slug}
                       href={`/war-room/${asset.slug}`}
+                      onClick={() => setWarRoomsExpanded(false)}
                       style={{
                         fontFamily: "var(--font-mono)",
                         fontSize: "0.65rem",
@@ -287,34 +320,67 @@ export function Nav() {
         >
           {NAV_ITEMS.map((item) => (
             <div key={item.href}>
-              <Link
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "0.75rem",
-                  letterSpacing: "0.08em",
-                  color: palette.paperDim,
-                  textDecoration: "none",
-                  display: "block",
-                  padding: "12px 20px",
-                  borderBottom: `1px solid ${palette.hairline}`,
-                  transition: "all 0.2s",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.background = `${palette.bg}99`;
-                  (e.currentTarget as HTMLAnchorElement).style.color = palette.amber;
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
-                  (e.currentTarget as HTMLAnchorElement).style.color = palette.paperDim;
-                }}
-              >
-                {item.label}
-              </Link>
+              {/* War Rooms: Mobile Toggle */}
+              {item.hasSubmenu ? (
+                <button
+                  onClick={() => setWarRoomsExpanded(!warRoomsExpanded)}
+                  style={{
+                    width: "100%",
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "0.75rem",
+                    letterSpacing: "0.08em",
+                    color: palette.paperDim,
+                    background: "transparent",
+                    border: "none",
+                    borderBottom: `1px solid ${palette.hairline}`,
+                    textDecoration: "none",
+                    display: "block",
+                    padding: "12px 20px",
+                    transition: "all 0.2s",
+                    cursor: "pointer",
+                    textAlign: "left",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.background = `${palette.bg}99`;
+                    (e.currentTarget as HTMLButtonElement).style.color = palette.amber;
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+                    (e.currentTarget as HTMLButtonElement).style.color = palette.paperDim;
+                  }}
+                >
+                  {item.label} {warRoomsExpanded ? "▼" : "▶"}
+                </button>
+              ) : (
+                <Link
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "0.75rem",
+                    letterSpacing: "0.08em",
+                    color: palette.paperDim,
+                    textDecoration: "none",
+                    display: "block",
+                    padding: "12px 20px",
+                    borderBottom: `1px solid ${palette.hairline}`,
+                    transition: "all 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLAnchorElement).style.background = `${palette.bg}99`;
+                    (e.currentTarget as HTMLAnchorElement).style.color = palette.amber;
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
+                    (e.currentTarget as HTMLAnchorElement).style.color = palette.paperDim;
+                  }}
+                >
+                  {item.label}
+                </Link>
+              )}
 
-              {/* Mobile Submenu for WAR ROOMS */}
-              {item.hasSubmenu && (
+              {/* Mobile Submenu for WAR ROOMS - Only shows when expanded */}
+              {item.hasSubmenu && warRoomsExpanded && (
                 <div style={{ background: palette.bg, paddingLeft: "10px" }}>
                   {categories.map((category) => (
                     <div key={category}>
@@ -334,7 +400,10 @@ export function Nav() {
                         <Link
                           key={asset.slug}
                           href={`/war-room/${asset.slug}`}
-                          onClick={() => setMobileMenuOpen(false)}
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            setWarRoomsExpanded(false);
+                          }}
                           style={{
                             fontFamily: "var(--font-mono)",
                             fontSize: "0.65rem",
