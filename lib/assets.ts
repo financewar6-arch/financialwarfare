@@ -66,7 +66,7 @@ export const ASSETS: Record<string, AssetConfig> = {
     name: "GOLD",
     symbol: "XAUUSD",
     category: "Precious Metals",
-    fetchFeed: (rangeDays) => fetchYahooWithFallback("XAUUSD", rangeDays, "Gold"),
+    fetchFeed: (rangeDays) => fetchGoldApi("XAUUSD", rangeDays),
   },
   apple: {
     slug: "apple",
