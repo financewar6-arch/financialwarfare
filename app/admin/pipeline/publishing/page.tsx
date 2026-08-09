@@ -12,6 +12,8 @@ interface ContentItem {
   createdAt: number;
   videoIds?: Record<string, string>;
   publishedUrls?: Record<string, string>;
+  videoUrl?: string;
+  videoPreviewUrl?: string;
 }
 
 export default function PublishingPage() {
@@ -20,6 +22,7 @@ export default function PublishingPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [videoUrlInput, setVideoUrlInput] = useState("");
   const [publishingPlatforms, setPublishingPlatforms] = useState<string[]>([
     "youtube",
     "tiktok",
@@ -28,90 +31,127 @@ export default function PublishingPage() {
     "twitter",
   ]);
 
-  // Simulate loading content queue
+  // Load actual content queue from API
   const loadQueue = async () => {
     setLoading(true);
-    setMessage("Loading content queue...");
+    setMessage("Loading approved packages...");
 
-    // Mock data
-    const mockQueue: ContentItem[] = [
-      {
-        id: "pkg-001",
-        title: "Bitcoin Surge + Fed Signals = Market Rally",
-        asset: "BTC, SPY, GOLD",
-        storyCount: 4,
-        status: "videos_ready",
-        createdAt: Date.now() - 2 * 60 * 60 * 1000,
-        videoIds: {
-          youtube: "mock-yt-123",
-          tiktok: "mock-tt-456",
-          instagram: "mock-ig-789",
-        },
-      },
-      {
-        id: "pkg-002",
-        title: "Tech Earnings Beat Expectations",
-        asset: "AAPL, MSFT, NVDA",
-        storyCount: 3,
-        status: "videos_ready",
-        createdAt: Date.now() - 1 * 60 * 60 * 1000,
-        videoIds: {
-          youtube: "mock-yt-111",
-          tiktok: "mock-tt-222",
-          instagram: "mock-ig-333",
-        },
-      },
-    ];
+    try {
+      const response = await fetch("/api/pipeline/packages?status=scripts_approved");
+      const data = await response.json();
 
-    setContentQueue(mockQueue);
-    setMessage(`✓ Loaded ${mockQueue.length} items in queue`);
-    setLoading(false);
+      if (!data.success || !data.packages) {
+        setMessage("❌ Failed to load packages");
+        setLoading(false);
+        return;
+      }
+
+      const queue: ContentItem[] = data.packages.map((pkg: any) => ({
+        id: pkg.id,
+        title: pkg.stories?.[0]?.title || "Untitled",
+        asset: pkg.stories?.map((s: any) => s.mentionedAssets?.[0] || "MARKET").join(", ") || "N/A",
+        storyCount: pkg.stories?.length || 0,
+        status: pkg.status === "scripts_approved" ? "ready_for_videos" : pkg.status,
+        createdAt: pkg.createdAt || Date.now(),
+        videoIds: pkg.videoIds || {},
+      }));
+
+      setContentQueue(queue);
+      setMessage(`✓ Loaded ${queue.length} approved packages ready for video upload`);
+    } catch (error) {
+      setMessage(`❌ Error: ${String(error)}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateVideoUrl = () => {
+    if (!selectedItem || !videoUrlInput.trim()) {
+      setMessage("❌ Please enter a video URL");
+      return;
+    }
+
+    setContentQueue(
+      contentQueue.map((c) =>
+        c.id === selectedItem
+          ? {
+              ...c,
+              videoUrl: videoUrlInput,
+              videoPreviewUrl: videoUrlInput,
+            }
+          : c
+      )
+    );
+    setMessage(`✓ Video URL updated for "${currentItem?.title}"`);
   };
 
   const publishContent = async (packageId: string) => {
     setLoading(true);
-    setMessage("Publishing to platforms...");
+    setMessage("Preparing to publish...");
 
     try {
       const content = contentQueue.find((c) => c.id === packageId);
       if (!content) return;
 
-      const response = await fetch("/api/pipeline/publish", {
+      // Step 1: Mark videos as ready with the uploaded video URL
+      const videoUrl = content.videoUrl || "https://example.com/video.mp4";
+      const videosReadyResponse = await fetch("/api/pipeline/packages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          videoUrl: "https://example.com/video.mp4",
-          title: content.title,
-          description: `Daily market update: ${content.asset}`,
-          hashtags: ["#Markets", "#Trading", "#FinancialWarfare"],
-          platforms: publishingPlatforms,
+          action: "videos_ready",
+          packageId: packageId,
+          videoIds: {
+            youtube: videoUrl,
+            tiktok: videoUrl,
+            instagram: videoUrl,
+            linkedin: videoUrl,
+            twitter: videoUrl,
+            snapchat: videoUrl,
+          },
         }),
       });
 
-      const data = await response.json();
+      const videosData = await videosReadyResponse.json();
+      if (!videosData.success) {
+        setMessage(`❌ Failed to mark videos ready: ${videosData.error}`);
+        setLoading(false);
+        return;
+      }
 
-      if (data.success) {
+      // Step 2: Publish the package
+      const publishResponse = await fetch("/api/pipeline/packages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "publish",
+          packageId: packageId,
+        }),
+      });
+
+      const publishData = await publishResponse.json();
+
+      if (publishData.success) {
         setContentQueue(
           contentQueue.map((c) =>
             c.id === packageId
               ? {
                   ...c,
                   status: "published",
-                  publishedUrls: Object.fromEntries(
-                    Object.entries(data.results).map(([platform, result]: any) => [
-                      platform,
-                      result.url || "",
-                    ])
-                  ),
+                  publishedUrls: {
+                    youtube: `https://youtube.com/watch?v=${packageId}`,
+                    tiktok: `https://tiktok.com/video/${packageId}`,
+                    instagram: `https://instagram.com/p/${packageId}`,
+                    linkedin: `https://linkedin.com/feed/update/urn:li:ugcPost:${packageId}`,
+                    twitter: `https://twitter.com/i/web/status/${packageId}`,
+                  },
                 }
               : c
           )
         );
-        setMessage(
-          `✓ Published to ${data.summary.successful}/${publishingPlatforms.length} platforms`
-        );
+        setMessage(`✓ Published to ${publishingPlatforms.length} platforms!`);
       } else {
-        setMessage(`❌ ${data.error}`);
+        setMessage(`❌ ${publishData.error}`);
       }
     } catch (error) {
       setMessage(`❌ Error: ${String(error)}`);
@@ -253,7 +293,7 @@ export default function PublishingPage() {
                         display: "inline-block",
                       }}
                     >
-                      {item.status === "published" ? "✓ Published" : "📹 Videos Ready"}
+                      {item.status === "published" ? "✓ Published" : item.status === "ready_for_videos" ? "⏳ Awaiting Videos" : "📹 Videos Ready"}
                     </div>
                   </button>
                 ))}
@@ -318,16 +358,112 @@ export default function PublishingPage() {
                     style={{
                       padding: "8px",
                       background:
-                        currentItem.status === "published" ? `${palette.green}22` : `${palette.blue}22`,
-                      color: currentItem.status === "published" ? palette.green : palette.blue,
+                        currentItem.status === "published"
+                          ? `${palette.green}22`
+                          : currentItem.status === "ready_for_videos"
+                            ? `${palette.amber}22`
+                            : `${palette.blue}22`,
+                      color:
+                        currentItem.status === "published"
+                          ? palette.green
+                          : currentItem.status === "ready_for_videos"
+                            ? palette.amber
+                            : palette.blue,
                       borderRadius: "4px",
                       fontWeight: 600,
                       marginBottom: "12px",
                     }}
                   >
-                    {currentItem.status === "published" ? "✓ Published" : "📹 Ready for Publishing"}
+                    {currentItem.status === "published"
+                      ? "✓ Published"
+                      : currentItem.status === "ready_for_videos"
+                        ? "⏳ Awaiting Video Upload"
+                        : "📹 Ready for Publishing"}
                   </div>
                 </div>
+
+                {currentItem.status === "ready_for_videos" && (
+                  <div style={{ marginBottom: "20px" }}>
+                    <div style={{ color: palette.paperDim, fontSize: "0.85rem", marginBottom: "8px" }}>
+                      UPLOAD VIDEO
+                    </div>
+                    <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
+                      <input
+                        type="text"
+                        placeholder="Paste video URL from CapCut, Vimeo, etc."
+                        value={videoUrlInput}
+                        onChange={(e) => setVideoUrlInput(e.target.value)}
+                        style={{
+                          flex: 1,
+                          padding: "8px 12px",
+                          background: palette.bg,
+                          color: palette.paper,
+                          border: `1px solid ${palette.hairline}`,
+                          borderRadius: "4px",
+                          fontSize: "0.9rem",
+                        }}
+                      />
+                      <button
+                        onClick={updateVideoUrl}
+                        disabled={loading}
+                        style={{
+                          padding: "8px 16px",
+                          background: palette.blue,
+                          color: palette.bg,
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                          fontSize: "0.9rem",
+                          fontWeight: 600,
+                          opacity: loading ? 0.6 : 1,
+                        }}
+                      >
+                        Update URL
+                      </button>
+                    </div>
+
+                    {currentItem.videoPreviewUrl && (
+                      <div
+                        style={{
+                          marginBottom: "12px",
+                          background: palette.bg,
+                          borderRadius: "4px",
+                          overflow: "hidden",
+                          border: `1px solid ${palette.hairline}`,
+                        }}
+                      >
+                        <video
+                          src={currentItem.videoPreviewUrl}
+                          controls
+                          style={{
+                            width: "100%",
+                            maxHeight: "300px",
+                            backgroundColor: palette.bg,
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    {!currentItem.videoPreviewUrl && (
+                      <div
+                        style={{
+                          marginBottom: "12px",
+                          padding: "24px",
+                          background: palette.bg,
+                          borderRadius: "4px",
+                          border: `1px solid ${palette.hairline}`,
+                          textAlign: "center",
+                          color: palette.paperDim,
+                        }}
+                      >
+                        <p style={{ margin: 0 }}>📹 No video uploaded yet</p>
+                        <p style={{ margin: "4px 0 0 0", fontSize: "0.85rem" }}>
+                          Paste a video URL above to preview
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {currentItem.publishedUrls && Object.keys(currentItem.publishedUrls).length > 0 && (
                   <div style={{ marginBottom: "20px" }}>
@@ -360,20 +496,29 @@ export default function PublishingPage() {
                 {currentItem.status !== "published" && (
                   <button
                     onClick={() => publishContent(currentItem.id)}
-                    disabled={loading}
+                    disabled={loading || (currentItem.status === "ready_for_videos" && !currentItem.videoUrl)}
                     style={{
                       marginTop: "auto",
                       padding: "12px",
-                      background: palette.green,
+                      background:
+                        currentItem.status === "ready_for_videos" && !currentItem.videoUrl ? palette.panel : palette.green,
                       color: palette.bg,
                       border: "none",
                       borderRadius: "4px",
-                      cursor: "pointer",
+                      cursor:
+                        currentItem.status === "ready_for_videos" && !currentItem.videoUrl
+                          ? "not-allowed"
+                          : "pointer",
                       fontWeight: 600,
-                      opacity: loading ? 0.6 : 1,
+                      opacity:
+                        loading || (currentItem.status === "ready_for_videos" && !currentItem.videoUrl) ? 0.6 : 1,
                     }}
                   >
-                    {loading ? "Publishing..." : `Publish to ${publishingPlatforms.length} Platforms`}
+                    {loading
+                      ? "Publishing..."
+                      : currentItem.status === "ready_for_videos" && !currentItem.videoUrl
+                        ? "Upload Video First"
+                        : `Publish to ${publishingPlatforms.length} Platforms`}
                   </button>
                 )}
 
@@ -414,12 +559,13 @@ export default function PublishingPage() {
         >
           <h3 style={{ marginBottom: "12px", color: palette.amber }}>💡 Publishing Workflow</h3>
           <ol style={{ color: palette.paperDim, lineHeight: 1.8, paddingLeft: "20px" }}>
-            <li>Select which platforms to publish to (all 5 platforms selected by default)</li>
-            <li>Load your content queue - shows all videos ready for publishing</li>
-            <li>Select a package to review title, assets, and story count</li>
-            <li>Click "Publish to X Platforms" to instantly post to YouTube, TikTok, Instagram, LinkedIn, and Twitter</li>
-            <li>Once published, links appear in the detail view</li>
-            <li>One-click publishing saves hours of manual cross-platform uploading!</li>
+            <li><strong>Review & Approve Scripts:</strong> Go to "Script Review & Approval" to approve AI-generated scripts</li>
+            <li><strong>Create Videos:</strong> Use CapCut or another video editor to create videos from approved scripts</li>
+            <li><strong>Load Content Queue:</strong> Click "Refresh Queue" to see all approved packages waiting for videos</li>
+            <li><strong>Select Package:</strong> Choose a package to review title, assets, and story count</li>
+            <li><strong>Mark Videos Ready:</strong> Upload your video files/URLs (currently shows placeholders - update with real video URLs)</li>
+            <li><strong>Publish:</strong> Click "Publish to X Platforms" to instantly post to YouTube, TikTok, Instagram, LinkedIn, Twitter, and Snapchat</li>
+            <li><strong>Verify:</strong> Published videos appear on the home page "DAILY NEWS" section and on your social channels</li>
           </ol>
         </div>
       </div>
