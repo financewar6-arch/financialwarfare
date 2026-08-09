@@ -7,11 +7,7 @@ export function Footer() {
   const { palette } = useTheme();
 
   const SOCIAL_LINKS = [
-    { name: "Twitter", icon: "𝕏", url: "https://twitter.com/financialwarfare" },
-    { name: "Instagram", icon: "📸", url: "https://instagram.com/financialwarfare" },
-    { name: "LinkedIn", icon: "💼", url: "https://linkedin.com/company/financialwarfare" },
-    { name: "GitHub", icon: "🐙", url: "https://github.com/financialwarfare" },
-    { name: "Discord", icon: "💬", url: "https://discord.gg/financialwarfare" },
+    { name: "X", icon: "𝕏", url: "https://twitter.com/financialwar_" },
   ];
 
   const FOOTER_LINKS = [
