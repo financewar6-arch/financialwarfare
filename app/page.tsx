@@ -326,7 +326,7 @@ export default function Home() {
       {!outlookLoading && outlooks.length > 0 && (
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px 60px" }}>
           <div style={{ borderTop: `1px solid ${palette.hairline}`, paddingTop: "60px" }}>
-            {/* Featured Article (Latest) */}
+            {/* Featured Article (Latest) - Click to view details, CTA opens Substack in new tab */}
             <Link href={`/sunday-outlook/${outlooks[0].slug}`} style={{ textDecoration: "none", color: "inherit" }}>
               <div style={{ cursor: "pointer", display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "48px", alignItems: "start", marginBottom: "60px", transition: "all 0.3s ease" }}
                 onMouseEnter={(e) => {
@@ -392,16 +392,40 @@ export default function Home() {
                     {outlooks[0].summary}
                   </p>
 
-                  <div style={{ color: palette.blue, fontWeight: 600, display: "inline-block", fontSize: "0.95rem", transition: "all 0.2s ease" }}
+                  <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                    <div style={{ color: palette.blue, fontWeight: 600, display: "inline-block", fontSize: "0.95rem", transition: "all 0.2s ease", cursor: "pointer" }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.color = palette.amber;
+                        (e.currentTarget as HTMLElement).style.transform = "translateX(4px)";
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.color = palette.blue;
+                        (e.currentTarget as HTMLElement).style.transform = "translateX(0)";
+                      }}>
+                      Read Full Outlook →
+                    </div>
+
+                    {/* Direct Substack link opens in new tab */}
+                    <a href={outlooks[0].substackUrl} target="_blank" rel="noopener noreferrer" style={{
+                      color: palette.amber,
+                      fontWeight: 600,
+                      fontSize: "0.85rem",
+                      textDecoration: "none",
+                      transition: "all 0.2s ease",
+                      padding: "4px 8px",
+                      border: `1px solid ${palette.amber}`,
+                      borderRadius: "3px"
+                    }}
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.color = palette.amber;
-                      (e.currentTarget as HTMLElement).style.transform = "translateX(4px)";
+                      (e.currentTarget as HTMLElement).style.background = palette.amber;
+                      (e.currentTarget as HTMLElement).style.color = palette.bg;
                     }}
                     onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.color = palette.blue;
-                      (e.currentTarget as HTMLElement).style.transform = "translateX(0)";
+                      (e.currentTarget as HTMLElement).style.background = "transparent";
+                      (e.currentTarget as HTMLElement).style.color = palette.amber;
                     }}>
-                    Read Full Outlook →
+                      Open on Substack ↗
+                    </a>
                   </div>
                 </div>
               </div>
@@ -460,16 +484,40 @@ export default function Home() {
                         {outlooks[1].summary.substring(0, 150)}...
                       </p>
 
-                      <div style={{ color: palette.blue, fontSize: "0.85rem", fontWeight: 600, transition: "all 0.2s ease" }}
+                      <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                        <div style={{ color: palette.blue, fontSize: "0.85rem", fontWeight: 600, transition: "all 0.2s ease", cursor: "pointer" }}
+                          onMouseEnter={(e) => {
+                            (e.currentTarget as HTMLElement).style.color = palette.amber;
+                            (e.currentTarget as HTMLElement).style.transform = "translateX(4px)";
+                          }}
+                          onMouseLeave={(e) => {
+                            (e.currentTarget as HTMLElement).style.color = palette.blue;
+                            (e.currentTarget as HTMLElement).style.transform = "translateX(0)";
+                          }}>
+                          Read Outlook →
+                        </div>
+
+                        {/* Direct Substack link opens in new tab */}
+                        <a href={outlooks[1].substackUrl} target="_blank" rel="noopener noreferrer" style={{
+                          color: palette.amber,
+                          fontWeight: 600,
+                          fontSize: "0.75rem",
+                          textDecoration: "none",
+                          transition: "all 0.2s ease",
+                          padding: "2px 6px",
+                          border: `1px solid ${palette.amber}`,
+                          borderRadius: "3px"
+                        }}
                         onMouseEnter={(e) => {
-                          (e.currentTarget as HTMLElement).style.color = palette.amber;
-                          (e.currentTarget as HTMLElement).style.transform = "translateX(4px)";
+                          (e.currentTarget as HTMLElement).style.background = palette.amber;
+                          (e.currentTarget as HTMLElement).style.color = palette.bg;
                         }}
                         onMouseLeave={(e) => {
-                          (e.currentTarget as HTMLElement).style.color = palette.blue;
-                          (e.currentTarget as HTMLElement).style.transform = "translateX(0)";
+                          (e.currentTarget as HTMLElement).style.background = "transparent";
+                          (e.currentTarget as HTMLElement).style.color = palette.amber;
                         }}>
-                        Read Outlook →
+                          ↗
+                        </a>
                       </div>
                     </div>
                   </div>
