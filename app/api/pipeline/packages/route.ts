@@ -63,18 +63,49 @@ export async function POST(request: NextRequest) {
       let processedScripts: any[] = [];
 
       if (stories && Array.isArray(stories)) {
-        processedStories = stories;
-        processedScripts = scripts || [];
+        // Check if this is an array of generated content objects or ProcessedNewsArticle objects
+        const firstItem = stories[0];
+        if (firstItem?.storyId && !firstItem?.articleHash) {
+          // Handle array of generated content objects from review page
+          processedStories = stories.map((content: any) => ({
+            id: content.storyId,
+            articleHash: content.storyId, // Use storyId as hash
+            title: content.storyTitle,
+            description: content.storyTitle,
+            mentionedAssets: content.asset ? [content.asset] : [],
+            score: 75,
+            qualityScore: 75,
+            impactedAssets: [],
+            sourceId: "manual",
+            url: "",
+            publishedAt: Date.now(),
+            status: "ingested",
+            processedAt: Date.now(),
+          }));
+          processedScripts = stories[0]?.scripts || [];
+        } else {
+          // Handle array of ProcessedNewsArticle objects
+          processedStories = stories;
+          processedScripts = scripts || [];
+        }
       } else if (stories && typeof stories === "object") {
         // Handle single generated content object from review page
         const content = stories as any;
         processedStories = [
           {
             id: content.storyId,
+            articleHash: content.storyId,
             title: content.storyTitle,
             description: content.storyTitle,
-            mentionedAssets: [content.asset],
-            score: 75, // Default score for manual approval
+            mentionedAssets: content.asset ? [content.asset] : [],
+            score: 75,
+            qualityScore: 75,
+            impactedAssets: [],
+            sourceId: "manual",
+            url: "",
+            publishedAt: Date.now(),
+            status: "ingested",
+            processedAt: Date.now(),
           },
         ];
         processedScripts = content.scripts || [];
