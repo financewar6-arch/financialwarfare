@@ -197,7 +197,7 @@ export default function PipelineDashboard() {
             </Link>
 
             {/* Step 4 */}
-            <Link href="/admin/pipeline/analytics">
+            <Link href="/admin/pipeline/published">
               <div
                 style={{
                   background: palette.panel,
@@ -220,13 +220,13 @@ export default function PipelineDashboard() {
               >
                 <div style={{ fontSize: "2rem", marginBottom: "12px" }}>4️⃣</div>
                 <h3 style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: "8px" }}>
-                  Track Analytics
+                  Analytics & Performance
                 </h3>
                 <p style={{ color: palette.paperDim, fontSize: "0.85rem", lineHeight: 1.6 }}>
-                  Monitor performance across platforms, identify top assets, optimize content strategy
+                  Monitor engagement across platforms, track views/likes, identify top performing content
                 </p>
                 <div style={{ marginTop: "12px", fontSize: "0.8rem", color: palette.red }}>
-                  → View Analytics
+                  → View Published Content
                 </div>
               </div>
             </Link>
@@ -266,8 +266,13 @@ export default function PipelineDashboard() {
             </div>
 
             <div>
-              <div style={{ color: palette.blue, fontWeight: 600 }}>GET /api/pipeline/analytics</div>
-              <div style={{ color: palette.paperDim }}>Get performance metrics</div>
+              <div style={{ color: palette.blue, fontWeight: 600 }}>GET /api/pipeline/packages</div>
+              <div style={{ color: palette.paperDim }}>Get content packages (all statuses)</div>
+            </div>
+
+            <div>
+              <div style={{ color: palette.blue, fontWeight: 600 }}>POST /api/pipeline/packages</div>
+              <div style={{ color: palette.paperDim }}>Create, approve, publish, or update packages</div>
             </div>
           </div>
         </div>
