@@ -1,42 +1,100 @@
-import { fetchFinanceNews, fetchCryptoNews, fetchMarketNews } from "@/lib/providers/newsapi";
+import { NextRequest, NextResponse } from "next/server";
 
-const demoArticles = [
-  {
-    title: "Tech stocks rally on AI optimism",
-    description: "Major tech companies see gains as AI investment continues",
-    url: "#",
-    source: { name: "Financial Times" },
-    publishedAt: new Date().toISOString(),
-  },
-  {
-    title: "Bitcoin stabilizes above $45,000",
-    description: "Cryptocurrency markets show strength amid economic uncertainty",
-    url: "#",
-    source: { name: "CoinDesk" },
-    publishedAt: new Date().toISOString(),
-  },
-];
+export async function GET(request: NextRequest) {
+  const category = request.nextUrl.searchParams.get("category") || "business";
+  const apiKey = process.env.NEWSAPI_KEY;
 
-export async function GET(request: Request) {
+  if (!apiKey) {
+    console.warn("NEWSAPI_KEY is not set, returning mock news data");
+    return NextResponse.json({
+      articles: [
+        {
+          title: "Market Rally Continues as Tech Stocks Lead Gains",
+          description: "Major tech companies drive market higher amid optimism about AI adoption and earnings growth.",
+          url: "https://example.com/news1",
+          urlToImage: "https://via.placeholder.com/800x450?text=Tech+Rally",
+          source: { name: "Market Watch" },
+          publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        },
+        {
+          title: "Federal Reserve Holds Rate Steady on Inflation Progress",
+          description: "The central bank maintains its current interest rate as inflation continues to cool, signaling potential rate cuts ahead.",
+          url: "https://example.com/news2",
+          urlToImage: "https://via.placeholder.com/800x450?text=Fed+Rates",
+          source: { name: "Reuters" },
+          publishedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+        },
+        {
+          title: "Gold Prices Surge on Geopolitical Tensions",
+          description: "Safe-haven demand pushes gold prices to new highs as investors seek protection amid global uncertainties.",
+          url: "https://example.com/news3",
+          urlToImage: "https://via.placeholder.com/800x450?text=Gold+Surge",
+          source: { name: "CNBC" },
+          publishedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+        },
+        {
+          title: "Crypto Market Rebounds After Regulatory Clarity",
+          description: "Bitcoin and Ethereum gain momentum following clearer regulatory frameworks from major economies.",
+          url: "https://example.com/news4",
+          urlToImage: "https://via.placeholder.com/800x450?text=Crypto+Rally",
+          source: { name: "CoinDesk" },
+          publishedAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
+        },
+      ],
+    });
+  }
+
   try {
-    const { searchParams } = new URL(request.url);
-    const category = searchParams.get("category") || "market";
+    const response = await fetch(
+      `https://newsapi.org/v2/everything?q=${category}&sortBy=publishedAt&language=en&pageSize=4&apiKey=${apiKey}`,
+      { cache: "no-store" }
+    );
 
-    let articles;
-    switch (category) {
-      case "crypto":
-        articles = await fetchCryptoNews(15);
-        break;
-      case "market":
-        articles = await fetchMarketNews(15);
-        break;
-      default:
-        articles = await fetchFinanceNews(category, 15);
+    if (!response.ok) {
+      console.error(`NewsAPI error: ${response.status}`);
+      throw new Error(`NewsAPI returned ${response.status}`);
     }
 
-    return Response.json({ articles });
+    const data = await response.json();
+    return NextResponse.json({ articles: data.articles || [] });
   } catch (error) {
-    console.error("News API error:", error);
-    return Response.json({ articles: demoArticles });
+    console.error("News fetch failed:", error);
+    // Return mock data as fallback
+    return NextResponse.json({
+      articles: [
+        {
+          title: "Market Rally Continues as Tech Stocks Lead Gains",
+          description: "Major tech companies drive market higher amid optimism about AI adoption and earnings growth.",
+          url: "https://example.com/news1",
+          urlToImage: "https://via.placeholder.com/800x450?text=Tech+Rally",
+          source: { name: "Market Watch" },
+          publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        },
+        {
+          title: "Federal Reserve Holds Rate Steady on Inflation Progress",
+          description: "The central bank maintains its current interest rate as inflation continues to cool, signaling potential rate cuts ahead.",
+          url: "https://example.com/news2",
+          urlToImage: "https://via.placeholder.com/800x450?text=Fed+Rates",
+          source: { name: "Reuters" },
+          publishedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+        },
+        {
+          title: "Gold Prices Surge on Geopolitical Tensions",
+          description: "Safe-haven demand pushes gold prices to new highs as investors seek protection amid global uncertainties.",
+          url: "https://example.com/news3",
+          urlToImage: "https://via.placeholder.com/800x450?text=Gold+Surge",
+          source: { name: "CNBC" },
+          publishedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+        },
+        {
+          title: "Crypto Market Rebounds After Regulatory Clarity",
+          description: "Bitcoin and Ethereum gain momentum following clearer regulatory frameworks from major economies.",
+          url: "https://example.com/news4",
+          urlToImage: "https://via.placeholder.com/800x450?text=Crypto+Rally",
+          source: { name: "CoinDesk" },
+          publishedAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
+        },
+      ],
+    });
   }
 }
