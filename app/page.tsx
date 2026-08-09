@@ -118,7 +118,7 @@ export default function Home() {
   const [newsLoading, setNewsLoading] = useState(true);
   const [shorts, setShorts] = useState<Short[]>([]);
   const [shortsLoading, setShortsLoading] = useState(true);
-  const [outlook, setOutlook] = useState<SundayOutlook | null>(null);
+  const [outlooks, setOutlooks] = useState<SundayOutlook[]>([]);
   const [outlookLoading, setOutlookLoading] = useState(true);
   const [searchInput, setSearchInput] = useState("");
   const [searchResults, setSearchResults] = useState<(typeof ASSETS)[keyof typeof ASSETS][]>([]);
@@ -175,12 +175,12 @@ export default function Home() {
       })
       .catch(() => setShortsLoading(false));
 
-    // Fetch featured Sunday Outlook
-    fetch("/api/sunday-outlook?featured=true")
+    // Fetch all Sunday Outlooks (latest 2)
+    fetch("/api/sunday-outlook")
       .then((res) => res.json())
       .then((data) => {
-        if (data.success && data.outlook) {
-          setOutlook(data.outlook);
+        if (data.success && data.outlooks) {
+          setOutlooks(data.outlooks.slice(0, 2));
         }
         setOutlookLoading(false);
       })
@@ -323,17 +323,18 @@ export default function Home() {
       </div>
 
       {/* Sunday Outlook Featured Section */}
-      {!outlookLoading && outlook && (
+      {!outlookLoading && outlooks.length > 0 && (
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px 60px" }}>
-          <div style={{ borderTop: `1px solid ${palette.hairline}`, paddingTop: "60px", marginBottom: "60px" }}>
-            <Link href={`/sunday-outlook/${outlook.slug}`} style={{ textDecoration: "none", color: "inherit" }}>
-              <div style={{ cursor: "pointer", display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "40px", alignItems: "start" }}>
+          <div style={{ borderTop: `1px solid ${palette.hairline}`, paddingTop: "60px" }}>
+            {/* Featured Article (Latest) */}
+            <Link href={`/sunday-outlook/${outlooks[0].slug}`} style={{ textDecoration: "none", color: "inherit" }}>
+              <div style={{ cursor: "pointer", display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "40px", alignItems: "start", marginBottom: "60px" }}>
                 {/* Left: Image */}
-                {outlook.coverImage && (
+                {outlooks[0].coverImage && (
                   <div style={{ position: "relative" }}>
                     <img
-                      src={outlook.coverImage}
-                      alt={outlook.title}
+                      src={outlooks[0].coverImage}
+                      alt={outlooks[0].title}
                       style={{
                         width: "100%",
                         aspectRatio: "4/3",
@@ -359,13 +360,13 @@ export default function Home() {
                       lineHeight: 1.3,
                     }}
                   >
-                    {outlook.title}
+                    {outlooks[0].title}
                   </h2>
 
                   <div style={{ display: "flex", gap: "16px", marginBottom: "16px", color: palette.paperDim, fontSize: "0.9rem" }}>
-                    <span style={{ fontWeight: 600 }}>{outlook.author}</span>
+                    <span style={{ fontWeight: 600 }}>{outlooks[0].author}</span>
                     <span>
-                      {new Date(outlook.publishedAt).toLocaleDateString("en-US", {
+                      {new Date(outlooks[0].publishedAt).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
                         year: "numeric",
@@ -374,7 +375,7 @@ export default function Home() {
                   </div>
 
                   <p style={{ fontSize: "0.95rem", lineHeight: 1.7, color: palette.paperDim, marginBottom: "24px" }}>
-                    {outlook.summary}
+                    {outlooks[0].summary}
                   </p>
 
                   <div style={{ color: palette.blue, fontWeight: 600, display: "inline-block" }}>
@@ -383,6 +384,59 @@ export default function Home() {
                 </div>
               </div>
             </Link>
+
+            {/* Previous Article (if exists) */}
+            {outlooks.length > 1 && (
+              <div style={{ paddingTop: "40px", borderTop: `1px solid ${palette.hairline}` }}>
+                <h3 style={{ color: palette.amber, fontSize: "0.85rem", fontWeight: 600, marginBottom: "24px", letterSpacing: "0.08em" }}>
+                  PREVIOUS OUTLOOK
+                </h3>
+                <Link href={`/sunday-outlook/${outlooks[1].slug}`} style={{ textDecoration: "none", color: "inherit" }}>
+                  <div style={{ cursor: "pointer", display: "grid", gridTemplateColumns: "200px 1fr", gap: "24px", alignItems: "start" }}>
+                    {/* Thumbnail */}
+                    {outlooks[1].coverImage && (
+                      <div style={{ position: "relative" }}>
+                        <img
+                          src={outlooks[1].coverImage}
+                          alt={outlooks[1].title}
+                          style={{
+                            width: "100%",
+                            aspectRatio: "4/3",
+                            objectFit: "cover",
+                            borderRadius: "4px",
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    {/* Content */}
+                    <div>
+                      <h4 style={{ fontSize: "1rem", fontWeight: 600, marginBottom: "8px", lineHeight: 1.3 }}>
+                        {outlooks[1].title}
+                      </h4>
+
+                      <div style={{ display: "flex", gap: "12px", marginBottom: "12px", color: palette.paperDim, fontSize: "0.85rem" }}>
+                        <span>{outlooks[1].author}</span>
+                        <span>
+                          {new Date(outlooks[1].publishedAt).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
+                      </div>
+
+                      <p style={{ fontSize: "0.9rem", lineHeight: 1.6, color: palette.paperDim, marginBottom: "12px" }}>
+                        {outlooks[1].summary.substring(0, 150)}...
+                      </p>
+
+                      <div style={{ color: palette.blue, fontSize: "0.85rem", fontWeight: 600 }}>
+                        Read Outlook →
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            )}
 
             {/* All Outlooks Link */}
             <div style={{ marginTop: "32px", paddingTop: "32px", borderTop: `1px solid ${palette.hairline}` }}>
