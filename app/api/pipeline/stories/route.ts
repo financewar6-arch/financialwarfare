@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const topCount = parseInt(searchParams.get("topCount") || "5");
     const lookbackHours = parseInt(searchParams.get("lookbackHours") || "16");
-    const minimumScore = parseInt(searchParams.get("minimumScore") || "40");
+    const minimumScore = parseInt(searchParams.get("minimumScore") || "30");
 
     // In production: fetch from /api/news
     const articles = MOCK_ARTICLES;
