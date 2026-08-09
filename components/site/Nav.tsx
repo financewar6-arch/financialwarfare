@@ -36,6 +36,18 @@ export function Nav() {
 
 
   return (
+    <div>
+      <style>{`
+        @media (max-width: 768px) {
+          .nav-desktop { display: none !important; }
+          .hamburger-btn { display: flex !important; }
+          .mobile-menu { display: flex !important; }
+        }
+        @media (min-width: 769px) {
+          .hamburger-btn { display: none !important; }
+          .mobile-menu { display: none !important; }
+        }
+      `}</style>
     <div
       style={{
         position: "sticky",
@@ -61,17 +73,16 @@ export function Nav() {
 
       {/* Hamburger Menu - Mobile Only */}
       <button
+        className="hamburger-btn"
         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         style={{
-          display: "none",
-          "@media (max-width: 768px)": { display: "flex" },
           background: "transparent",
           border: "none",
           cursor: "pointer",
           flexDirection: "column",
           gap: "6px",
           marginLeft: "auto",
-        } as any}
+        }}
         onMouseEnter={(e) => {
           (e.currentTarget as HTMLButtonElement).style.opacity = "0.8";
         }}
@@ -85,7 +96,7 @@ export function Nav() {
       </button>
 
       {/* Left: Nav Links - Desktop Only */}
-      <div style={{ display: "flex", gap: "24px", "@media (max-width: 768px)": { display: "none" } } as any}>
+      <div className="nav-desktop" style={{ display: "flex", gap: "24px" }}>
       {NAV_ITEMS.map((item) => (
         <div
           key={item.href}
@@ -264,6 +275,7 @@ export function Nav() {
       {/* Mobile Menu - Expands below navbar */}
       {mobileMenuOpen && (
         <div
+          className="mobile-menu"
           style={{
             position: "absolute",
             top: "100%",
@@ -271,10 +283,8 @@ export function Nav() {
             right: 0,
             background: palette.panel,
             borderBottom: `1px solid ${palette.hairline}`,
-            display: "flex",
             flexDirection: "column",
-            "@media (min-width: 768px)": { display: "none" },
-          } as any}
+          }}
         >
           {NAV_ITEMS.map((item) => (
             <div key={item.href}>
@@ -353,6 +363,7 @@ export function Nav() {
           ))}
         </div>
       )}
+    </div>
     </div>
   );
 }
