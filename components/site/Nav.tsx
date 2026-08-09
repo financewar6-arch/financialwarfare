@@ -38,12 +38,11 @@ export function Nav() {
   return (
     <div>
       <style>{`
-        @media (max-width: 768px) {
+        @media (max-width: 1023px) {
           .nav-desktop { display: none !important; }
           .hamburger-btn { display: flex !important; }
-          .mobile-menu { display: flex !important; }
         }
-        @media (min-width: 769px) {
+        @media (min-width: 1024px) {
           .hamburger-btn { display: none !important; }
           .mobile-menu { display: none !important; }
         }
