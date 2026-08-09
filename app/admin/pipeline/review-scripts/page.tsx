@@ -97,26 +97,44 @@ export default function ReviewScriptsPage() {
   const approveAll = async () => {
     if (!currentContent) return;
     setLoading(true);
-    setMessage("Approving scripts...");
+    setMessage("Creating package and approving scripts...");
     try {
-      const response = await fetch("/api/pipeline/packages", {
+      // First, create a content package
+      const createResponse = await fetch("/api/pipeline/packages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "create",
+          stories: [currentContent],
+          scripts: currentContent.scripts,
+        }),
+      });
+
+      const createData = await createResponse.json();
+      if (!createData.success || !createData.package) {
+        setMessage("❌ Failed to create content package");
+        return;
+      }
+
+      // Then approve the created package
+      const approveResponse = await fetch("/api/pipeline/packages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "approve",
-          storyId: currentContent.storyId,
-          scripts: currentContent.scripts,
+          packageId: createData.package.id,
         }),
       });
-      const data = await response.json();
-      if (data.success) {
+
+      const approveData = await approveResponse.json();
+      if (approveData.success) {
         setMessage(`✓ Scripts approved for "${currentContent.storyTitle}"`);
         setTimeout(() => {
           setSelectedStory(null);
           setViewingPlatform(null);
         }, 1500);
       } else {
-        setMessage("❌ Failed to approve scripts");
+        setMessage(`❌ ${approveData.error || "Failed to approve scripts"}`);
       }
     } catch (error) {
       setMessage(`❌ Error: ${String(error)}`);
@@ -128,25 +146,45 @@ export default function ReviewScriptsPage() {
   const rejectStory = async () => {
     if (!currentContent) return;
     setLoading(true);
-    setMessage("Rejecting scripts...");
+    setMessage("Creating package and rejecting scripts...");
     try {
-      const response = await fetch("/api/pipeline/packages", {
+      // First, create a content package
+      const createResponse = await fetch("/api/pipeline/packages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "create",
+          stories: [currentContent],
+          scripts: currentContent.scripts,
+        }),
+      });
+
+      const createData = await createResponse.json();
+      if (!createData.success || !createData.package) {
+        setMessage("❌ Failed to create content package");
+        return;
+      }
+
+      // Then reject the created package
+      const rejectResponse = await fetch("/api/pipeline/packages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "reject",
-          storyId: currentContent.storyId,
+          packageId: createData.package.id,
+          reason: "Rejected during review - scripts need revision",
         }),
       });
-      const data = await response.json();
-      if (data.success) {
-        setMessage(`✓ Scripts rejected for "${currentContent.storyTitle}"`);
+
+      const rejectData = await rejectResponse.json();
+      if (rejectData.success) {
+        setMessage(`✓ Scripts rejected for "${currentContent.storyTitle}" - available for regeneration`);
         setTimeout(() => {
           setSelectedStory(null);
           setViewingPlatform(null);
         }, 1500);
       } else {
-        setMessage("❌ Failed to reject scripts");
+        setMessage(`❌ ${rejectData.error || "Failed to reject scripts"}`);
       }
     } catch (error) {
       setMessage(`❌ Error: ${String(error)}`);
