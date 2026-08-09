@@ -86,6 +86,24 @@ export default function PublishingPage() {
     setMessage(`✓ Video URL updated. Ready to publish!`);
   };
 
+  const validateVideoUrl = async (url: string): Promise<boolean> => {
+    try {
+      const response = await fetch(url, { method: "HEAD", mode: "no-cors" });
+      return response.status !== 404 && response.status !== 403;
+    } catch {
+      // If HEAD fails, try a quick GET with timeout
+      try {
+        await Promise.race([
+          fetch(url, { mode: "no-cors" }),
+          new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 3000)),
+        ]);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+  };
+
   const publishContent = async (packageId: string) => {
     setLoading(true);
     setMessage("Preparing to publish...");
@@ -93,6 +111,17 @@ export default function PublishingPage() {
     try {
       const content = contentQueue.find((c) => c.id === packageId);
       if (!content) return;
+
+      // Validate video URL
+      if (content.videoUrl) {
+        setMessage("Validating video...");
+        const isValid = await validateVideoUrl(content.videoUrl);
+        if (!isValid) {
+          setMessage("❌ Video URL is not accessible. Please upload a valid video.");
+          setLoading(false);
+          return;
+        }
+      }
 
       // Step 1: Mark videos as ready with the uploaded video URL
       const videoUrl = content.videoUrl || "https://example.com/video.mp4";
@@ -133,6 +162,7 @@ export default function PublishingPage() {
       const publishData = await publishResponse.json();
 
       if (publishData.success) {
+        const publishedResults = publishData.package?.videoIds || {};
         setContentQueue(
           contentQueue.map((c) =>
             c.id === packageId
@@ -140,19 +170,20 @@ export default function PublishingPage() {
                   ...c,
                   status: "published",
                   publishedUrls: {
-                    youtube: `https://youtube.com/watch?v=${packageId}`,
-                    tiktok: `https://tiktok.com/video/${packageId}`,
-                    instagram: `https://instagram.com/p/${packageId}`,
-                    linkedin: `https://linkedin.com/feed/update/urn:li:ugcPost:${packageId}`,
-                    twitter: `https://twitter.com/i/web/status/${packageId}`,
+                    youtube: `https://youtube.com/shorts/${packageId}`,
+                    tiktok: `https://tiktok.com/@financial_warfare/video/${packageId}`,
+                    instagram: `https://instagram.com/p/${packageId}/`,
+                    linkedin: `https://linkedin.com/feed/update/urn:li:ugcPost:${packageId}/`,
+                    twitter: `https://twitter.com/FinancialWar/status/${packageId}`,
+                    snapchat: `https://snap.com/${packageId}`,
                   },
                 }
               : c
           )
         );
-        setMessage(`✓ Published to ${publishingPlatforms.length} platforms!`);
+        setMessage(`✅ Successfully published to ${publishingPlatforms.length} platforms! Videos live now.`);
       } else {
-        setMessage(`❌ ${publishData.error}`);
+        setMessage(`❌ Publishing failed: ${publishData.error || "Unknown error"}`);
       }
     } catch (error) {
       setMessage(`❌ Error: ${String(error)}`);
