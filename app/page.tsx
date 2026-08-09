@@ -111,6 +111,17 @@ export default function Home() {
   const assets = Object.values(ASSETS);
   const featuredAssets = ["bitcoin", "gold", "apple"].map((slug) => ASSETS[slug as keyof typeof ASSETS]).filter(Boolean);
 
+  // Play flashbang sound once on page load
+  useEffect(() => {
+    const hasPlayedSound = localStorage.getItem("flashbang-played");
+    if (!hasPlayedSound) {
+      const audio = new Audio("/sounds/flashbang.mp3");
+      audio.volume = 0.7; // Set volume to 70%
+      audio.play().catch((err) => console.log("Audio playback failed:", err));
+      localStorage.setItem("flashbang-played", "true");
+    }
+  }, []);
+
   const handleSearch = (value: string) => {
     setSearchInput(value);
     if (value.length > 0) {
