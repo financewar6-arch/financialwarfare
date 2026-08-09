@@ -88,6 +88,16 @@ const typewriterStyles = `
   .delay-1 { animation-delay: 0.3s; opacity: 0; }
   .delay-2 { animation-delay: 1s; opacity: 0; }
   .delay-3 { animation-delay: 1.8s; opacity: 0; }
+  .videos-market-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  @media (min-width: 1024px) {
+    .videos-market-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
 `;
 
 export default function Home() {
@@ -277,7 +287,7 @@ export default function Home() {
       </div>
 
       {/* YouTube Videos + What's Moving the Market Section */}
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginBottom: "40px" }}>
+      <div className="videos-market-grid" style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px", marginBottom: "40px" }}>
         {/* Left: YouTube Videos / Market Shorts */}
         <div>
           <div style={{ fontFamily: "var(--font-header)", fontWeight: 600, fontSize: "1.3rem", color: palette.amber, letterSpacing: "0.08em", marginBottom: "16px" }}>
