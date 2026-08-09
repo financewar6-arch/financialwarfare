@@ -58,13 +58,35 @@ export async function POST(request: NextRequest) {
 
     // CREATE new package
     if (action === "create") {
-      if (!stories || !Array.isArray(stories)) {
-        return NextResponse.json({ error: "Stories array required" }, { status: 400 });
+      // Handle both full stories and generated content from review page
+      let processedStories: any[] = [];
+      let processedScripts: any[] = [];
+
+      if (stories && Array.isArray(stories)) {
+        processedStories = stories;
+        processedScripts = scripts || [];
+      } else if (stories && typeof stories === "object") {
+        // Handle single generated content object from review page
+        const content = stories as any;
+        processedStories = [
+          {
+            id: content.storyId,
+            title: content.storyTitle,
+            description: content.storyTitle,
+            mentionedAssets: [content.asset],
+            score: 75, // Default score for manual approval
+          },
+        ];
+        processedScripts = content.scripts || [];
+      }
+
+      if (!processedStories.length) {
+        return NextResponse.json({ error: "Stories required" }, { status: 400 });
       }
 
       const pkg = createContentPackage(
-        stories,
-        scripts || [],
+        processedStories as any,
+        processedScripts as any,
         lookbackHours || 16
       );
 
