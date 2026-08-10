@@ -323,13 +323,8 @@ export function Nav() {
             <div key={item.href}>
               {/* War Rooms: Mobile Toggle */}
               {item.hasSubmenu ? (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setWarRoomsExpanded(!warRoomsExpanded);
-                  }}
+                <div
+                  onClick={() => setWarRoomsExpanded(!warRoomsExpanded)}
                   style={{
                     width: "100%",
                     fontFamily: "var(--font-mono)",
@@ -337,7 +332,6 @@ export function Nav() {
                     letterSpacing: "0.08em",
                     color: warRoomsExpanded ? palette.amber : palette.paperDim,
                     background: "transparent",
-                    border: "none",
                     borderBottom: `1px solid ${palette.hairline}`,
                     textDecoration: "none",
                     display: "block",
@@ -345,20 +339,23 @@ export function Nav() {
                     transition: "all 0.2s",
                     cursor: "pointer",
                     textAlign: "left",
-                    WebkitTouchCallout: "none",
-                    WebkitUserSelect: "none",
+                    userSelect: "none",
+                  }}
+                  onTouchStart={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.background = `${palette.bg}99`;
+                  }}
+                  onTouchEnd={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.background = "transparent";
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.background = `${palette.bg}99`;
-                    (e.currentTarget as HTMLButtonElement).style.color = palette.amber;
+                    (e.currentTarget as HTMLDivElement).style.background = `${palette.bg}99`;
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.background = "transparent";
-                    (e.currentTarget as HTMLButtonElement).style.color = warRoomsExpanded ? palette.amber : palette.paperDim;
+                    (e.currentTarget as HTMLDivElement).style.background = "transparent";
                   }}
                 >
                   {item.label} {warRoomsExpanded ? "▼" : "▶"}
-                </button>
+                </div>
               ) : (
                 <Link
                   href={item.href}
