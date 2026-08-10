@@ -1,0 +1,152 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model (integrate with your existing auth system)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  warRooms      MyWarRoom[]
+  entitlements  UserEntitlement?
+  outlooks      WeeklyOutlook[]
+}
+
+// MY WAR ROOM - User's personal war room
+model MyWarRoom {
+  id           String   @id @default(cuid())
+  userId       String
+  assetSlug    String
+  assetName    String
+  assetSymbol  String
+  status       String   @default("active") // active | archived
+  isPremium    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  lastViewedAt DateTime @default(now())
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  thesis UserThesis?
+  notes  PersonalNote[]
+  watching WatchItem?
+
+  // Index for faster lookups
+  @@index([userId])
+  @@index([assetSlug])
+  @@unique([userId, assetSlug])
+}
+
+// User's investment thesis
+model UserThesis {
+  id       String   @id @default(cuid())
+  content  String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  warRoom   MyWarRoom @relation(fields: [warRoomId], references: [id], onDelete: Cascade)
+  warRoomId String    @unique
+}
+
+// What user is watching
+model WatchItem {
+  id            String   @id @default(cuid())
+  catalyst      String?
+  mainRisk      String?
+  upcomingEvent String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  warRoom   MyWarRoom @relation(fields: [warRoomId], references: [id], onDelete: Cascade)
+  warRoomId String    @unique
+}
+
+// Personal notes
+model PersonalNote {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  warRoom   MyWarRoom @relation(fields: [warRoomId], references: [id], onDelete: Cascade)
+  warRoomId String
+
+  @@index([warRoomId])
+}
+
+// WEEKLY OUTLOOK - Published articles
+model WeeklyOutlook {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  subtitle        String?
+  author          String   @default("Financial Opp")
+  publishedAt     DateTime
+  coverImage      String?
+  summary         String   @db.Text
+  substackUrl     String   @unique
+  category        String   @default("Market Outlook")
+  featured        Boolean  @default(false)
+  status          String   @default("draft") // draft | published | archived
+
+  // SEO
+  seoTitle        String?
+  seoDescription  String?
+  ogImage         String?
+
+  // Analytics
+  viewCount       Int      @default(0)
+  clicksToSubstack Int     @default(0)
+
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  publishedBy     User?    @relation(fields: [publishedById], references: [id])
+  publishedById   String?
+
+  // Indexes
+  @@index([status])
+  @@index([featured])
+  @@index([publishedAt])
+}
+
+// Premium entitlements
+model UserEntitlement {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  tier                 String   @default("free") // free | pro | premium
+  features             String[] @default([]) // MY_WAR_ROOM, UNLIMITED_WAR_ROOMS, etc
+  isPremium            Boolean  @default(false)
+  expiresAt            DateTime?
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Waitlist for MY WAR ROOM
+model WaitlistSignup {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
