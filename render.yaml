@@ -18,6 +18,9 @@ services:
       - key: CRON_SECRET
         scope: all
         sync: false
+      - key: HEALTH_CHECK_SECRET
+        scope: all
+        sync: false
       - key: GOLD_API_KEY
         scope: all
         sync: false

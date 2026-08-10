@@ -1,0 +1,51 @@
+RENDER ENVIRONMENT VARIABLES - COPY & PASTE INTO DASHBOARD
+
+Generated Secrets (Use these exactly - don't change):
+=====================================
+HEALTH_CHECK_SECRET=5d06f94366bf7918689bf072ce11ebfba43d7cb016b992f262d03bbe3e73c969
+CRON_SECRET=604e5a7d398bfe211f07146983051bb86fb4b506afac37a39092cee705ce6012
+
+AUTOMATIC (Render provides these):
+=====================================
+DATABASE_URL=postgresql://... (Render auto-creates)
+NODE_ENV=production (already set)
+
+REQUIRED - Get your own API keys:
+=====================================
+FINNHUB_API_KEY=[Get from https://finnhub.io/dashboard - free tier available]
+NEWSAPI_KEY=[Get from https://newsapi.org/pricing - free tier: 100 requests/day]
+ALPHA_VANTAGE_API_KEY=[Get from https://www.alphavantage.co/api/ - free tier: 5 requests/min]
+NEXT_PUBLIC_API_URL=https://financial-warfare-XXXX.onrender.com [Replace XXXX with your Render subdomain]
+
+OPTIONAL:
+=====================================
+GOLD_API_KEY=[Get from https://metals.live/ - public API, no key needed]
+SLACK_WEBHOOK_URL=[Get from Slack workspace settings - for notifications]
+GOOGLE_CLIENT_ID=[Get from https://console.cloud.google.com]
+GOOGLE_CLIENT_SECRET=[Get from https://console.cloud.google.com]
+GITHUB_CLIENT_ID=[Get from https://github.com/settings/developers]
+GITHUB_CLIENT_SECRET=[Get from https://github.com/settings/developers]
+
+INSTRUCTIONS:
+=====================================
+1. Go to: https://dashboard.render.com
+2. Select your financial-warfare service
+3. Click "Environment" tab
+4. Add each variable from above sections
+5. Click "Save"
+6. Service will auto-redeploy with new env vars
+
+TESTING:
+=====================================
+After deploy completes, test health endpoint:
+
+curl -H "Authorization: Bearer 5d06f94366bf7918689bf072ce11ebfba43d7cb016b992f262d03bbe3e73c969" \
+  https://financial-warfare-XXXX.onrender.com/api/health
+
+Expected response (200 OK):
+{
+  "status": "ok",
+  "timestamp": "2026-08-10...",
+  "totalLatencyMs": 2150,
+  "checks": {...}
+}
