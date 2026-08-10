@@ -175,8 +175,8 @@ export default function Home() {
       })
       .catch(() => setShortsLoading(false));
 
-    // Fetch all Sunday Outlooks (latest 2)
-    fetch("/api/sunday-outlook")
+    // Fetch all Weekly Outlooks (latest 2)
+    fetch("/api/weekly-outlook")
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.outlooks) {
@@ -634,13 +634,13 @@ export default function Home() {
 
       </div>
 
-      {/* Sunday Outlook Featured Section */}
+      {/* Weekly Outlook Featured Section */}
       {!outlookLoading && outlooks.length > 0 && (
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px 60px" }}>
           <div style={{ borderTop: `1px solid ${palette.hairline}`, paddingTop: "60px" }}>
             {/* Featured Article (Latest) - Click to view details, CTA opens Substack in new tab */}
             <div style={{ cursor: "pointer", display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "48px", alignItems: "start", marginBottom: "60px", transition: "all 0.3s ease" }}
-              onClick={() => window.location.href = `/sunday-outlook/${outlooks[0].slug}`}
+              onClick={() => window.location.href = `/weekly-outlook/${outlooks[0].slug}`}
               onMouseEnter={(e) => {
                 const img = (e.currentTarget as HTMLElement).querySelector('img');
                 if (img) (img as HTMLElement).style.transform = "scale(1.02)";
@@ -670,7 +670,7 @@ export default function Home() {
               {/* Right: Content */}
               <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
                 <div style={{ color: palette.amber, fontSize: "0.7rem", fontWeight: 700, letterSpacing: "1.5px", marginBottom: "16px", textTransform: "uppercase" }}>
-                  📰 Sunday Outlook
+                  📰 Weekly Outlook
                 </div>
 
                 <h2
@@ -747,7 +747,7 @@ export default function Home() {
                   📖 Previous Outlook
                 </h3>
                 <div style={{ cursor: "pointer", display: "grid", gridTemplateColumns: "240px 1fr", gap: "32px", alignItems: "start", transition: "all 0.2s ease", padding: "16px", borderRadius: "8px", background: `${palette.panel}33` }}
-                  onClick={() => window.location.href = `/sunday-outlook/${outlooks[1].slug}`}
+                  onClick={() => window.location.href = `/weekly-outlook/${outlooks[1].slug}`}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLElement).style.background = `${palette.panel}66`;
                   }}
@@ -835,7 +835,7 @@ export default function Home() {
 
             {/* All Outlooks Link */}
             <div style={{ marginTop: "32px", paddingTop: "32px", borderTop: `1px solid ${palette.hairline}` }}>
-              <Link href="/sunday-outlook" style={{ color: palette.blue, textDecoration: "none", fontSize: "0.9rem", fontWeight: 600 }}>
+              <Link href="/weekly-outlook" style={{ color: palette.blue, textDecoration: "none", fontSize: "0.9rem", fontWeight: 600 }}>
                 View All Outlooks →
               </Link>
             </div>
