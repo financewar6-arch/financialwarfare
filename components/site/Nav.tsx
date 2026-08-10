@@ -107,6 +107,7 @@ export function Nav() {
           {/* War Rooms: Toggle Button */}
           {item.hasSubmenu ? (
             <button
+              type="button"
               onClick={() => setWarRoomsExpanded(!warRoomsExpanded)}
               style={{
                 fontFamily: "var(--font-mono)",
@@ -323,13 +324,18 @@ export function Nav() {
               {/* War Rooms: Mobile Toggle */}
               {item.hasSubmenu ? (
                 <button
-                  onClick={() => setWarRoomsExpanded(!warRoomsExpanded)}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setWarRoomsExpanded(!warRoomsExpanded);
+                  }}
                   style={{
                     width: "100%",
                     fontFamily: "var(--font-mono)",
                     fontSize: "0.75rem",
                     letterSpacing: "0.08em",
-                    color: palette.paperDim,
+                    color: warRoomsExpanded ? palette.amber : palette.paperDim,
                     background: "transparent",
                     border: "none",
                     borderBottom: `1px solid ${palette.hairline}`,
@@ -339,6 +345,8 @@ export function Nav() {
                     transition: "all 0.2s",
                     cursor: "pointer",
                     textAlign: "left",
+                    WebkitTouchCallout: "none",
+                    WebkitUserSelect: "none",
                   }}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLButtonElement).style.background = `${palette.bg}99`;
@@ -346,7 +354,7 @@ export function Nav() {
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLButtonElement).style.background = "transparent";
-                    (e.currentTarget as HTMLButtonElement).style.color = palette.paperDim;
+                    (e.currentTarget as HTMLButtonElement).style.color = warRoomsExpanded ? palette.amber : palette.paperDim;
                   }}
                 >
                   {item.label} {warRoomsExpanded ? "▼" : "▶"}

@@ -1,26 +1,40 @@
 services:
   - type: web
     name: financial-warfare
-    env: docker
-    repo: https://github.com/financewar6-arch/financialwarfare.git
-    region: oregon
-    plan: free
-    healthCheckPath: /
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
     envVars:
-      - key: NEXTAUTH_SECRET
-        value: WIzPGvjB2ZGtakMiHqT2Nh7gLEYJvrDM1QMOHpyz5Ro=
-      - key: NEXTAUTH_URL
-        fromService:
-          name: financial-warfare
-          property: host
-          suffix: /
-      - key: ALPHA_VANTAGE_API_KEY
-        value: FYTQR83WLU2TXK0U
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        scope: all
       - key: FINNHUB_API_KEY
-        value: 97f5069e61c14610b4ee9ab910b9a9e9
-      - key: GOLD_API_KEY
-        value: 596994ade4b99a951cb019c36eb75be7b9ed04182297ff7a2ba0fcf457715e83
+        scope: all
+        sync: false
       - key: NEWSAPI_KEY
-        value: 97f5069e61c14610b4ee9ab910b9a9e9
-      - key: NEXTAUTH_TRUST_HOST
-        value: "true"
+        scope: all
+        sync: false
+      - key: CRON_SECRET
+        scope: all
+        sync: false
+      - key: GOLD_API_KEY
+        scope: all
+        sync: false
+      - key: ALPHA_VANTAGE_API_KEY
+        scope: all
+        sync: false
+
+crons:
+  # Live Price Updates - Every Hour
+  - id: hourly-prices
+    command: "curl -X POST $RENDER_EXTERNAL_URL/api/cron/hourly-prices -H 'Authorization: Bearer $CRON_SECRET'"
+    schedule: "0 * * * *"
+
+  # Daily Editorial & Analysis - Market Close (5 PM ET)
+  - id: daily-update
+    command: "curl -X POST $RENDER_EXTERNAL_URL/api/cron/daily-update -H 'Authorization: Bearer $CRON_SECRET'"
+    schedule: "0 21 * * *"
+    notifications:
+      web_hook:
+        url: $SLACK_WEBHOOK_URL

@@ -14,6 +14,9 @@ interface AssetData {
   history: Array<{ t: number; p: number }>;
 }
 
+// Distinct colors for comparison - vibrant and easily distinguishable
+const COMPARISON_COLORS = ["#00D9FF", "#FF6B35", "#FFD700"];
+
 export function ComparisonTool() {
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
   const [showSelector, setShowSelector] = useState(false);
@@ -35,17 +38,16 @@ export function ComparisonTool() {
   };
 
   const chartAssets_computed = selectedAssets
-    .map((slug) => {
+    .map((slug, index) => {
       const feed = feeds[slug];
       if (!feed?.data?.history || feed.data.history.length === 0) return null;
 
       const asset = ASSETS[slug as keyof typeof ASSETS];
-      const isUp = (feed.data?.change24h ?? 0) >= 0;
 
       return {
         slug,
         symbol: asset.symbol,
-        color: isUp ? "#5FA06B" : "#C1503A",
+        color: COMPARISON_COLORS[index % COMPARISON_COLORS.length],
         history: feed.data.history,
       };
     })
