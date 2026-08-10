@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useTheme } from "@/lib/theme-context";
 
 interface UserDashboard {
@@ -14,30 +16,51 @@ interface UserDashboard {
 
 export default function DashboardPage() {
   const { palette } = useTheme();
+  const router = useRouter();
+  const { data: session, status } = useSession();
   const [dashboard, setDashboard] = useState<UserDashboard | null>(null);
   const [loading, setLoading] = useState(true);
-  const [userId] = useState("demo-user");
+
+  // Redirect to signin if not authenticated
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/signin");
+    }
+  }, [status, router]);
 
   useEffect(() => {
+    if (!session?.user?.id) return;
+
     const fetchDashboard = async () => {
       try {
-        // TODO: Replace with actual user data from auth
+        const userId = (session.user as any).id;
+        const res = await fetch(`/api/user/dashboard?userId=${userId}`);
+        const data = await res.json();
+
         setDashboard({
           userId,
-          userName: "Trader",
-          warRoomCount: 0,
-          watchlistCount: 5,
+          userName: session.user?.name || "Trader",
+          warRoomCount: data.warRoomCount || 0,
+          watchlistCount: data.watchlistCount || 5,
           lastActive: new Date().toLocaleTimeString(),
         });
       } catch (error) {
         console.error("Failed to load dashboard:", error);
+        // Fallback to basic dashboard
+        setDashboard({
+          userId: (session.user as any).id,
+          userName: session.user?.name || "Trader",
+          warRoomCount: 0,
+          watchlistCount: 5,
+          lastActive: new Date().toLocaleTimeString(),
+        });
       } finally {
         setLoading(false);
       }
     };
 
     fetchDashboard();
-  }, [userId]);
+  }, [session]);
 
   if (loading) {
     return (
@@ -67,21 +90,48 @@ export default function DashboardPage() {
           borderBottom: `1px solid ${palette.hairline}`,
         }}
       >
-        <div style={{ marginBottom: "32px" }}>
-          <h1
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "32px" }}>
+          <div>
+            <h1
+              style={{
+                fontFamily: "var(--font-header)",
+                fontSize: "2.4rem",
+                fontWeight: 700,
+                marginBottom: "8px",
+                color: palette.paper,
+              }}
+            >
+              Welcome back, {dashboard?.userName}
+            </h1>
+            <p style={{ color: palette.paperDim, fontSize: "1rem" }}>
+              Last active: {dashboard?.lastActive}
+            </p>
+          </div>
+          <button
+            onClick={() => signOut({ callbackUrl: "/" })}
             style={{
-              fontFamily: "var(--font-header)",
-              fontSize: "2.4rem",
-              fontWeight: 700,
-              marginBottom: "8px",
-              color: palette.paper,
+              padding: "10px 20px",
+              background: "transparent",
+              border: `1px solid ${palette.paperDim}`,
+              color: palette.paperDim,
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              transition: "all 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor = palette.amber;
+              (e.currentTarget as HTMLElement).style.color = palette.amber;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor = palette.paperDim;
+              (e.currentTarget as HTMLElement).style.color = palette.paperDim;
             }}
           >
-            Welcome back, {dashboard?.userName}
-          </h1>
-          <p style={{ color: palette.paperDim, fontSize: "1rem" }}>
-            Last active: {dashboard?.lastActive}
-          </p>
+            SIGN OUT
+          </button>
         </div>
 
         {/* Quick Stats Strip */}
