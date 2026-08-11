@@ -1,6 +1,14 @@
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+// Lazy instantiation to avoid issues during build time
+let prismaInstance: PrismaClient | null = null;
+
+function getPrisma(): PrismaClient {
+  if (!prismaInstance) {
+    prismaInstance = new PrismaClient();
+  }
+  return prismaInstance;
+}
 
 export enum PremiumFeature {
   MY_WAR_ROOM = "MY_WAR_ROOM",
@@ -26,7 +34,7 @@ export async function hasFeatureAccess(
   userId: string,
   feature: PremiumFeature
 ): Promise<boolean> {
-  const entitlement = await prisma.userEntitlement.findUnique({
+  const entitlement = await getPrisma().userEntitlement.findUnique({
     where: { userId },
   });
 
@@ -50,13 +58,13 @@ export async function grantFeature(
   userId: string,
   feature: PremiumFeature
 ): Promise<void> {
-  const entitlement = await prisma.userEntitlement.findUnique({
+  const entitlement = await getPrisma().userEntitlement.findUnique({
     where: { userId },
   });
 
   if (!entitlement) {
     // Create new entitlement
-    await prisma.userEntitlement.create({
+    await getPrisma().userEntitlement.create({
       data: {
         userId,
         tier: UserTier.PREMIUM,
@@ -68,7 +76,7 @@ export async function grantFeature(
     // Add feature if not already present
     const features = new Set(entitlement.features);
     features.add(feature);
-    await prisma.userEntitlement.update({
+    await getPrisma().userEntitlement.update({
       where: { userId },
       data: {
         features: Array.from(features),
@@ -86,7 +94,7 @@ export async function revokeFeature(
   userId: string,
   feature: PremiumFeature
 ): Promise<void> {
-  const entitlement = await prisma.userEntitlement.findUnique({
+  const entitlement = await getPrisma().userEntitlement.findUnique({
     where: { userId },
   });
 
@@ -97,7 +105,7 @@ export async function revokeFeature(
   const features = new Set(entitlement.features);
   features.delete(feature);
 
-  await prisma.userEntitlement.update({
+  await getPrisma().userEntitlement.update({
     where: { userId },
     data: {
       features: Array.from(features),
@@ -113,7 +121,7 @@ export async function revokeFeature(
 export async function createDefaultEntitlement(
   userId: string
 ): Promise<void> {
-  await prisma.userEntitlement.create({
+  await getPrisma().userEntitlement.create({
     data: {
       userId,
       tier: UserTier.FREE,
@@ -127,7 +135,7 @@ export async function createDefaultEntitlement(
  * Get user's entitlement
  */
 export async function getUserEntitlement(userId: string) {
-  return prisma.userEntitlement.findUnique({
+  return getPrisma().userEntitlement.findUnique({
     where: { userId },
   });
 }
