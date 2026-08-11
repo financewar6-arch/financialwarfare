@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { palette } from "@/lib/warroom/palette";
+import { useTheme } from "@/lib/theme-context";
 import { TrendingTickerSparkline } from "./TrendingTickerSparkline";
+import { Skeleton } from "./Skeleton";
+import { Badge } from "./Badge";
 
 interface TrendingTickerCardProps {
   slug: string;
@@ -12,6 +15,7 @@ interface TrendingTickerCardProps {
 }
 
 export function TrendingTickerCard({ slug, symbol, name }: TrendingTickerCardProps) {
+  const { palette: themePalette } = useTheme();
   const [price, setPrice] = useState<number | null>(null);
   const [change24h, setChange24h] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,37 +34,38 @@ export function TrendingTickerCard({ slug, symbol, name }: TrendingTickerCardPro
   }, [slug]);
 
   const isPositive = change24h !== null && change24h >= 0;
-  const priceColor = isPositive ? palette.green : palette.red;
+  const priceColor = isPositive ? themePalette.green : themePalette.red;
 
   return (
     <Link
       href={`/war-room/${slug}`}
       style={{
         padding: "12px 14px",
-        background: `${palette.panel}99`,
-        border: `1px solid ${palette.hairline}`,
+        background: themePalette.panel,
+        border: `1px solid ${themePalette.hairline}`,
         textDecoration: "none",
         display: "grid",
         gridTemplateColumns: "85px 70px 1fr",
         gap: "10px",
         alignItems: "center",
-        transition: "all 0.2s",
+        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
         cursor: "pointer",
+        borderRadius: "6px",
       }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor = palette.amber;
-        (e.currentTarget as HTMLElement).style.background = `${palette.panel}dd`;
+        (e.currentTarget as HTMLElement).style.borderColor = themePalette.amber;
+        (e.currentTarget as HTMLElement).style.boxShadow = `0 4px 12px ${themePalette.amber}22`;
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor = palette.hairline;
-        (e.currentTarget as HTMLElement).style.background = `${palette.panel}99`;
+        (e.currentTarget as HTMLElement).style.borderColor = themePalette.hairline;
+        (e.currentTarget as HTMLElement).style.boxShadow = "none";
       }}
     >
       <div>
-        <div style={{ fontFamily: "var(--font-header)", fontWeight: 600, fontSize: "0.75rem", color: palette.amber, marginBottom: "3px" }}>
+        <div style={{ fontFamily: "var(--font-header)", fontWeight: 600, fontSize: "0.75rem", color: themePalette.amber, marginBottom: "3px" }}>
           {symbol}
         </div>
-        <div style={{ fontFamily: "var(--font-body)", fontSize: "0.65rem", color: palette.paperDim }}>
+        <div style={{ fontFamily: "var(--font-body)", fontSize: "0.65rem", color: themePalette.paperDim }}>
           {name}
         </div>
       </div>
@@ -69,8 +74,9 @@ export function TrendingTickerCard({ slug, symbol, name }: TrendingTickerCardPro
 
       <div style={{ textAlign: "right" }}>
         {loading ? (
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: palette.paperDim }}>
-            ○ Loading
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px", alignItems: "flex-end" }}>
+            <Skeleton width="50px" height="16px" />
+            <Skeleton width="40px" height="14px" />
           </div>
         ) : (
           <>
@@ -80,9 +86,9 @@ export function TrendingTickerCard({ slug, symbol, name }: TrendingTickerCardPro
               </div>
             )}
             {change24h !== null && (
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: priceColor }}>
+              <Badge variant={isPositive ? "bullish" : "bearish"} size="sm">
                 {isPositive ? "+" : ""}{change24h.toFixed(2)}%
-              </div>
+              </Badge>
             )}
           </>
         )}

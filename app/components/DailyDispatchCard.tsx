@@ -1,6 +1,8 @@
 "use client";
 
 import { useTheme } from "@/lib/theme-context";
+import { Badge } from "@/components/site/Badge";
+import { Card } from "@/components/site/Card";
 
 interface Article {
   id: string;
