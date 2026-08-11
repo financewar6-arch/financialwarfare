@@ -32,6 +32,12 @@ export default function ArticlePage({ params }: { params: { slug: string[] } }) 
     // slug = ['stocks', 'nvda', 'why-is-nvda-up']
     const fetchArticle = async () => {
       try {
+        // Check if slug has the required segments
+        if (!params.slug || params.slug.length < 3) {
+          setNotFound(true);
+          return;
+        }
+
         const [category, symbol, actionSlug] = params.slug;
         const direction = actionSlug?.includes("up") ? "up" : "down";
 

@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { href: "/frontline", label: "THE FRONT LINE" },
   { href: "/war-room", label: "WAR ROOMS", hasSubmenu: true },
   { href: "/news", label: "NEWS" },
+  { href: "/daily-dispatch", label: "DAILY DISPATCH" },
   { href: "/weekly-outlook", label: "WEEKLY OUTLOOK" },
   { href: "/markets", label: "MARKETS" },
   { href: "/luxury", label: "LUXURY / ALTERNATIVE ASSETS" },

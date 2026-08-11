@@ -144,6 +144,24 @@ model UserEntitlement {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+// Daily Dispatch Articles (from Article Rewriter Agent)
+model DailyDispatchArticle {
+  id          String   @id @default(cuid())
+  headline    String
+  source      String   // BLOOMBERG, REUTERS, CNBC, FINNHUB, etc
+  body        String   @db.Text // 250-400 word rewrite
+  marketImpact String  @db.Text // Impact on markets
+  tactical    String   @db.Text // Tactical position/advice
+  keyNumbers  String[] @default([]) // Array of key numbers/data points
+  originalUrl String
+  publishedAt DateTime
+  createdAt   DateTime @default(now())
+
+  // Indexes for quick queries
+  @@index([publishedAt])
+  @@index([source])
+}
+
 // Waitlist for MY WAR ROOM
 model WaitlistSignup {
   id        String   @id @default(cuid())

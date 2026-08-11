@@ -33,7 +33,7 @@ export default function SundayOutlookAdmin() {
     setMessage("Fetching article...");
 
     try {
-      const response = await fetch("/api/sunday-outlook/fetch", {
+      const response = await fetch("/api/weekly-outlook/fetch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ substackUrl }),
@@ -64,7 +64,7 @@ export default function SundayOutlookAdmin() {
     setMessage("Publishing...");
 
     try {
-      const response = await fetch("/api/sunday-outlook", {
+      const response = await fetch("/api/weekly-outlook", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -82,7 +82,7 @@ export default function SundayOutlookAdmin() {
         return;
       }
 
-      setMessage("✓ Sunday Outlook published!");
+      setMessage("✓ Weekly Outlook published!");
       setPreview(null);
       setEditData({});
       setSubstackUrl("");
