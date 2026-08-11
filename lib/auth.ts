@@ -2,9 +2,7 @@ import { type NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { getPrisma } from "@/lib/prisma";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -53,6 +51,7 @@ export const authOptions: NextAuthOptions = {
 
         // Ensure user has an entitlement record (if database is available)
         try {
+          const prisma = getPrisma();
           const userId = token.id as string;
           const existingEntitlement = await prisma.userEntitlement.findUnique({
             where: { userId },
