@@ -239,6 +239,97 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Dashboard Sign-In Section */}
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px 40px" }}>
+        <div
+          style={{
+            background: `linear-gradient(135deg, ${palette.green}22 0%, ${palette.green}11 100%)`,
+            border: `1px solid ${palette.green}44`,
+            borderRadius: "8px",
+            padding: "32px 24px",
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              fontFamily: "var(--font-header)",
+              fontSize: "1.2rem",
+              fontWeight: 700,
+              color: palette.green,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              marginBottom: "10px",
+            }}
+          >
+            ⚡ ACCESS YOUR DASHBOARD
+          </div>
+          <div
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: "0.9rem",
+              color: palette.paperDim,
+              marginBottom: "16px",
+              maxWidth: "500px",
+              margin: "0 auto 16px",
+            }}
+          >
+            Sign in to manage War Rooms and unlock premium research tools.
+          </div>
+          <Link
+            href="/dashboard"
+            style={{
+              display: "inline-block",
+              padding: "10px 28px",
+              background: palette.green,
+              color: palette.bg,
+              textDecoration: "none",
+              borderRadius: "4px",
+              fontFamily: "var(--font-mono)",
+              fontWeight: 700,
+              fontSize: "0.85rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              transition: "all 0.2s",
+              marginRight: "8px",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.opacity = "0.9";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.opacity = "1";
+            }}
+          >
+            DASHBOARD
+          </Link>
+          <Link
+            href="/signin"
+            style={{
+              display: "inline-block",
+              padding: "10px 28px",
+              background: "transparent",
+              color: palette.green,
+              border: `1px solid ${palette.green}`,
+              textDecoration: "none",
+              borderRadius: "4px",
+              fontFamily: "var(--font-mono)",
+              fontWeight: 700,
+              fontSize: "0.85rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              transition: "all 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.background = `${palette.green}22`;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.background = "transparent";
+            }}
+          >
+            SIGN IN
+          </Link>
+        </div>
+      </div>
+
       {/* Search Bar */}
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px 16px" }}>
         <div style={{ position: "relative", marginBottom: "24px" }}>
@@ -779,6 +870,58 @@ export default function Home() {
         )}
       </div>
 
+      {/* Daily Dispatch Section - Below Market News */}
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px" }}>
+        <div style={{ marginBottom: "24px" }}>
+          <div
+            style={{
+              fontFamily: "var(--font-header)",
+              fontSize: "1.4rem",
+              fontWeight: 700,
+              color: palette.amber,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              marginBottom: "12px",
+            }}
+          >
+            📰 DAILY DISPATCH
+          </div>
+          <div
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: "0.95rem",
+              color: palette.paperDim,
+              marginBottom: "20px",
+            }}
+          >
+            Market-moving news & analysis, updated daily from premium sources.
+          </div>
+          <DailyDispatchWidget />
+          <Link
+            href="/daily-dispatch"
+            style={{
+              display: "inline-block",
+              marginTop: "16px",
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.85rem",
+              color: palette.amber,
+              textDecoration: "none",
+              borderBottom: `1px solid ${palette.amber}44`,
+              transition: "all 0.2s",
+              padding: "4px 0",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.borderBottomColor = palette.amber;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.borderBottomColor = `${palette.amber}44`;
+            }}
+          >
+            VIEW ALL DISPATCHES →
+          </Link>
+        </div>
+      </div>
+
       {/* Asset Grid by Category */}
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px" }}>
         {Object.entries(groupedByCategory).map(([category, categoryAssets]) => (
@@ -803,6 +946,99 @@ export default function Home() {
           </div>
         ))}
       </div>
+
+      {/* My War Rooms Section */}
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px" }}>
+        <div
+          style={{
+            background: `linear-gradient(135deg, ${palette.panel}88 0%, ${palette.panel}44 100%)`,
+            border: `1px solid ${palette.amber}44`,
+            borderRadius: "8px",
+            padding: "40px 32px",
+            textAlign: "center",
+            marginBottom: "40px",
+          }}
+        >
+          <div
+            style={{
+              fontFamily: "var(--font-header)",
+              fontSize: "1.5rem",
+              fontWeight: 700,
+              color: palette.amber,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              marginBottom: "12px",
+            }}
+          >
+            🎯 MY WAR ROOMS
+          </div>
+          <div
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: "1rem",
+              color: palette.paperDim,
+              marginBottom: "24px",
+              maxWidth: "600px",
+              margin: "0 auto 24px",
+            }}
+          >
+            Build personalized investment research workspaces. Track your thesis, monitor catalysts, and organize your market intelligence in one place.
+          </div>
+          <Link
+            href="/my-war-rooms/create"
+            style={{
+              display: "inline-block",
+              padding: "14px 40px",
+              background: palette.amber,
+              color: palette.bg,
+              textDecoration: "none",
+              borderRadius: "4px",
+              fontFamily: "var(--font-mono)",
+              fontWeight: 700,
+              fontSize: "0.9rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              transition: "all 0.2s",
+              marginRight: "12px",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.opacity = "0.9";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.opacity = "1";
+            }}
+          >
+            CREATE YOUR FIRST WAR ROOM
+          </Link>
+          <Link
+            href="/my-war-rooms"
+            style={{
+              display: "inline-block",
+              padding: "14px 40px",
+              background: "transparent",
+              color: palette.amber,
+              border: `2px solid ${palette.amber}`,
+              textDecoration: "none",
+              borderRadius: "4px",
+              fontFamily: "var(--font-mono)",
+              fontWeight: 700,
+              fontSize: "0.9rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              transition: "all 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.background = `${palette.amber}22`;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.background = "transparent";
+            }}
+          >
+            VIEW MY WAR ROOMS
+          </Link>
+        </div>
+      </div>
+
     </div>
   );
 }

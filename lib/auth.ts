@@ -2,6 +2,9 @@ import { type NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -47,6 +50,33 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }: any) {
       if (session.user) {
         (session.user as any).id = token.id;
+
+        // Ensure user has an entitlement record (if database is available)
+        try {
+          const userId = token.id as string;
+          const existingEntitlement = await prisma.userEntitlement.findUnique({
+            where: { userId },
+          });
+
+          if (!existingEntitlement) {
+            try {
+              await prisma.userEntitlement.create({
+                data: {
+                  userId,
+                  tier: "free",
+                  isPremium: false,
+                  features: [],
+                },
+              });
+            } catch (err) {
+              // Handle race condition if another process already created it
+              console.error("Error creating default entitlement:", err);
+            }
+          }
+        } catch (dbErr) {
+          // Database unavailable - allow session to continue without entitlement
+          console.warn("Database unavailable, skipping entitlement creation:", dbErr);
+        }
       }
       return session;
     },

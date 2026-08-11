@@ -1,103 +1,84 @@
 "use client";
 
-import { useState } from "react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useTheme } from "@/lib/theme-context";
+import Link from "next/link";
 import { ASSETS } from "@/lib/assets";
 
-type Step = "asset" | "thesis" | "watching" | "review";
-
-interface FormData {
-  assetSlug: string;
-  assetName: string;
-  assetSymbol: string;
-  thesisContent: string;
-  catalyst?: string;
-  mainRisk?: string;
-  upcomingEvent?: string;
-}
-
-export default function CreateMyWarRoomPage() {
-  const { palette } = useTheme();
+export default function CreateWarRoomPage() {
+  const { data: session, status } = useSession();
   const router = useRouter();
-  const [step, setStep] = useState<Step>("asset");
+  const { palette } = useTheme();
+  const [step, setStep] = useState(1);
+  const [selectedAsset, setSelectedAsset] = useState("");
+  const [thesis, setThesis] = useState("");
   const [loading, setLoading] = useState(false);
-  const [searchInput, setSearchInput] = useState("");
-  const [searchResults, setSearchResults] = useState<typeof ASSETS[keyof typeof ASSETS][]>([]);
-  const [formData, setFormData] = useState<FormData>({
-    assetSlug: "",
-    assetName: "",
-    assetSymbol: "",
-    thesisContent: "",
-  });
+  const [error, setError] = useState("");
 
-  const handleAssetSearch = (value: string) => {
-    setSearchInput(value);
-    if (value.length > 0) {
-      const results = Object.values(ASSETS).filter(
-        (asset) =>
-          asset.name.toLowerCase().includes(value.toLowerCase()) ||
-          asset.symbol.toLowerCase().includes(value.toLowerCase())
-      );
-      setSearchResults(results.slice(0, 8));
-    } else {
-      setSearchResults([]);
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/");
     }
-  };
+  }, [status, router]);
 
-  const handleAssetSelect = (asset: typeof ASSETS[keyof typeof ASSETS]) => {
-    setFormData({
-      ...formData,
-      assetSlug: asset.slug,
-      assetName: asset.name,
-      assetSymbol: asset.symbol,
-    });
-    setSearchInput("");
-    setSearchResults([]);
-    setStep("thesis");
-  };
+  if (status === "loading" || !session) {
+    return (
+      <div
+        style={{
+          background: palette.bg,
+          color: palette.paper,
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "1rem" }}>
+          Loading...
+        </div>
+      </div>
+    );
+  }
 
   const handleCreateWarRoom = async () => {
-    if (!formData.assetSlug || !formData.thesisContent) {
-      alert("Please complete all required fields");
+    if (!selectedAsset || !thesis.trim()) {
+      setError("Please select an asset and enter a thesis statement");
       return;
     }
 
     setLoading(true);
+    setError("");
+
     try {
+      const asset = ASSETS[selectedAsset];
       const res = await fetch("/api/my-war-rooms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: "create",
-          userId: "demo-user", // TODO: Get from auth
-          assetSlug: formData.assetSlug,
-          assetName: formData.assetName,
-          assetSymbol: formData.assetSymbol,
-          thesisContent: formData.thesisContent,
-          watching: {
-            catalyst: formData.catalyst,
-            mainRisk: formData.mainRisk,
-            upcomingEvent: formData.upcomingEvent,
-          },
+          assetSlug: selectedAsset,
+          assetName: asset.name,
+          assetSymbol: asset.symbol,
+          thesisStatement: thesis,
         }),
       });
 
-      const data = await res.json();
-
-      if (!data.success) {
-        alert(`Error: ${data.error || "Failed to create war room"}`);
-        setLoading(false);
-        return;
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to create war room");
       }
 
-      // Redirect to the new war room
-      router.push(`/my-war-rooms/${data.warRoom.id}`);
-    } catch (error) {
-      alert(`Error: ${String(error)}`);
+      const warRoom = await res.json();
+      router.push(`/my-war-rooms/${warRoom.id}`);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
       setLoading(false);
     }
   };
+
+  const premiumAssets = Object.values(ASSETS).filter((a) => a.isPremium);
 
   return (
     <div
@@ -105,449 +86,327 @@ export default function CreateMyWarRoomPage() {
         background: palette.bg,
         color: palette.paper,
         minHeight: "100vh",
+        padding: "40px 20px",
       }}
     >
-      {/* Header */}
-      <div style={{ maxWidth: "600px", margin: "0 auto", padding: "60px 20px 40px" }}>
-        <h1
+      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+        {/* Header */}
+        <div
           style={{
-            fontFamily: "var(--font-header)",
-            fontSize: "1.8rem",
-            marginBottom: "8px",
+            marginBottom: "40px",
+            borderBottom: `2px solid ${palette.amber}`,
+            paddingBottom: "20px",
           }}
         >
-          CREATE MY WAR ROOM
-        </h1>
-        <p style={{ color: palette.paperDim }}>
-          Build your personal intelligence workspace around any asset.
-        </p>
-      </div>
-
-      {/* Form Container */}
-      <div
-        style={{
-          maxWidth: "600px",
-          margin: "0 auto",
-          padding: "0 20px 60px",
-        }}
-      >
-        {/* STEP 1: Choose Asset */}
-        {step === "asset" && (
           <div
             style={{
-              background: `${palette.panel}99`,
-              border: `1px solid ${palette.hairline}`,
-              padding: "32px",
-              borderRadius: "8px",
+              fontFamily: "var(--font-header)",
+              fontSize: "1.8rem",
+              fontWeight: 700,
+              color: palette.amber,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              marginBottom: "16px",
             }}
           >
-            <div style={{ marginBottom: "24px" }}>
-              <h2
-                style={{
-                  fontSize: "1.3rem",
-                  color: palette.amber,
-                  marginBottom: "12px",
-                }}
-              >
-                STEP 1: CHOOSE AN ASSET
-              </h2>
-              <p style={{ color: palette.paperDim }}>
-                Search for an asset you want to track.
-              </p>
-            </div>
+            CREATE NEW WAR ROOM
+          </div>
+          <div
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.8rem",
+              color: palette.amberDim,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+            }}
+          >
+            STEP {step} OF 2
+          </div>
+        </div>
 
-            <input
-              type="text"
-              placeholder="Search: NVDA, Bitcoin, Gold..."
-              value={searchInput}
-              onChange={(e) => handleAssetSearch(e.target.value)}
+        {/* Error Message */}
+        {error && (
+          <div
+            style={{
+              background: `${palette.red}22`,
+              border: `1px solid ${palette.red}`,
+              padding: "16px",
+              marginBottom: "24px",
+              borderRadius: "4px",
+              fontFamily: "var(--font-body)",
+              fontSize: "0.9rem",
+              color: palette.red,
+            }}
+          >
+            {error}
+          </div>
+        )}
+
+        {/* Step 1: Select Asset */}
+        {step === 1 && (
+          <div style={{ marginBottom: "40px" }}>
+            <div
               style={{
-                width: "100%",
-                padding: "12px 16px",
-                background: palette.bg,
+                fontFamily: "var(--font-header)",
+                fontSize: "1.2rem",
+                fontWeight: 600,
+                marginBottom: "24px",
                 color: palette.paper,
-                border: `1px solid ${palette.hairline}`,
-                borderRadius: "4px",
-                fontSize: "0.95rem",
-                fontFamily: "var(--font-mono)",
-                marginBottom: "16px",
-                outline: "none",
               }}
-              onFocus={(e) => {
-                (e.target as HTMLInputElement).style.borderColor = palette.amber;
-              }}
-              onBlur={(e) => {
-                (e.target as HTMLInputElement).style.borderColor = palette.hairline;
-              }}
-            />
-
-            {searchResults.length > 0 && (
-              <div style={{ borderTop: `1px solid ${palette.hairline}` }}>
-                {searchResults.map((asset) => (
-                  <div
-                    key={asset.slug}
-                    onClick={() => handleAssetSelect(asset)}
-                    style={{
-                      padding: "12px 16px",
-                      borderBottom: `1px solid ${palette.hairline}`,
-                      cursor: "pointer",
-                      transition: "all 0.2s",
-                      background: palette.bg,
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.background =
-                        `${palette.panel}99`;
-                      (e.currentTarget as HTMLElement).style.color =
-                        palette.amber;
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.background =
-                        palette.bg;
-                      (e.currentTarget as HTMLElement).style.color =
-                        palette.paper;
-                    }}
-                  >
-                    <div style={{ fontWeight: 600 }}>{asset.name}</div>
-                    <div style={{ fontSize: "0.85rem", color: palette.amberDim }}>
-                      {asset.symbol}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* STEP 2: Your Thesis */}
-        {step === "thesis" && (
-          <div
-            style={{
-              background: `${palette.panel}99`,
-              border: `1px solid ${palette.hairline}`,
-              padding: "32px",
-              borderRadius: "8px",
-            }}
-          >
-            <div style={{ marginBottom: "24px" }}>
-              <h2
-                style={{
-                  fontSize: "1.3rem",
-                  color: palette.amber,
-                  marginBottom: "12px",
-                }}
-              >
-                STEP 2: YOUR THESIS
-              </h2>
-              <p style={{ color: palette.paperDim }}>
-                Why are you researching {formData.assetSymbol}?
-              </p>
-            </div>
-
-            <textarea
-              value={formData.thesisContent}
-              onChange={(e) =>
-                setFormData({ ...formData, thesisContent: e.target.value })
-              }
-              placeholder="Describe your own view, research thesis or reason for following this asset.
-
-Example: I believe AI infrastructure spending will continue to increase demand for Nvidia chips."
-              rows={6}
-              style={{
-                width: "100%",
-                padding: "16px",
-                background: palette.bg,
-                color: palette.paper,
-                border: `1px solid ${palette.hairline}`,
-                borderRadius: "4px",
-                fontSize: "0.95rem",
-                fontFamily: "var(--font-body)",
-                marginBottom: "16px",
-                outline: "none",
-                resize: "vertical",
-              }}
-              onFocus={(e) => {
-                (e.currentTarget as HTMLTextAreaElement).style.borderColor =
-                  palette.amber;
-              }}
-              onBlur={(e) => {
-                (e.currentTarget as HTMLTextAreaElement).style.borderColor =
-                  palette.hairline;
-              }}
-            />
-
-            <p style={{ color: palette.paperDim, fontSize: "0.85rem" }}>
-              This is your own view. Financial Warfare does not generate investment
-              recommendations.
-            </p>
-
-            <div style={{ display: "flex", gap: "12px", marginTop: "24px" }}>
-              <button
-                onClick={() => setStep("asset")}
-                style={{
-                  padding: "12px 24px",
-                  background: `${palette.panel}99`,
-                  border: `1px solid ${palette.hairline}`,
-                  color: palette.paper,
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  fontWeight: 600,
-                }}
-              >
-                ← BACK
-              </button>
-              <button
-                onClick={() => setStep("watching")}
-                disabled={!formData.thesisContent}
-                style={{
-                  padding: "12px 24px",
-                  background: palette.amber,
-                  color: palette.bg,
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  fontWeight: 600,
-                  opacity: !formData.thesisContent ? 0.5 : 1,
-                }}
-              >
-                NEXT →
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 3: What Are You Watching? */}
-        {step === "watching" && (
-          <div
-            style={{
-              background: `${palette.panel}99`,
-              border: `1px solid ${palette.hairline}`,
-              padding: "32px",
-              borderRadius: "8px",
-            }}
-          >
-            <div style={{ marginBottom: "24px" }}>
-              <h2
-                style={{
-                  fontSize: "1.3rem",
-                  color: palette.amber,
-                  marginBottom: "12px",
-                }}
-              >
-                STEP 3: WHAT ARE YOU WATCHING?
-              </h2>
-              <p style={{ color: palette.paperDim }}>
-                Optional: Add specific things you're monitoring.
-              </p>
-            </div>
-
-            <div style={{ marginBottom: "16px" }}>
-              <label
-                style={{
-                  display: "block",
-                  color: palette.paperDim,
-                  fontSize: "0.85rem",
-                  marginBottom: "8px",
-                  textTransform: "uppercase",
-                }}
-              >
-                Key Catalyst
-              </label>
-              <input
-                type="text"
-                value={formData.catalyst || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, catalyst: e.target.value })
-                }
-                placeholder="What's the main catalyst you're watching?"
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  background: palette.bg,
-                  color: palette.paper,
-                  border: `1px solid ${palette.hairline}`,
-                  borderRadius: "4px",
-                  fontSize: "0.95rem",
-                  outline: "none",
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: "16px" }}>
-              <label
-                style={{
-                  display: "block",
-                  color: palette.paperDim,
-                  fontSize: "0.85rem",
-                  marginBottom: "8px",
-                  textTransform: "uppercase",
-                }}
-              >
-                Main Risk
-              </label>
-              <input
-                type="text"
-                value={formData.mainRisk || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, mainRisk: e.target.value })
-                }
-                placeholder="What's your main risk concern?"
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  background: palette.bg,
-                  color: palette.paper,
-                  border: `1px solid ${palette.hairline}`,
-                  borderRadius: "4px",
-                  fontSize: "0.95rem",
-                  outline: "none",
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: "24px" }}>
-              <label
-                style={{
-                  display: "block",
-                  color: palette.paperDim,
-                  fontSize: "0.85rem",
-                  marginBottom: "8px",
-                  textTransform: "uppercase",
-                }}
-              >
-                Important Upcoming Event
-              </label>
-              <input
-                type="text"
-                value={formData.upcomingEvent || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, upcomingEvent: e.target.value })
-                }
-                placeholder="e.g., Earnings date, Product launch"
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  background: palette.bg,
-                  color: palette.paper,
-                  border: `1px solid ${palette.hairline}`,
-                  borderRadius: "4px",
-                  fontSize: "0.95rem",
-                  outline: "none",
-                }}
-              />
-            </div>
-
-            <div style={{ display: "flex", gap: "12px" }}>
-              <button
-                onClick={() => setStep("thesis")}
-                style={{
-                  padding: "12px 24px",
-                  background: `${palette.panel}99`,
-                  border: `1px solid ${palette.hairline}`,
-                  color: palette.paper,
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  fontWeight: 600,
-                }}
-              >
-                ← BACK
-              </button>
-              <button
-                onClick={() => setStep("review")}
-                style={{
-                  padding: "12px 24px",
-                  background: palette.amber,
-                  color: palette.bg,
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  fontWeight: 600,
-                }}
-              >
-                REVIEW →
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 4: Review & Create */}
-        {step === "review" && (
-          <div
-            style={{
-              background: `${palette.panel}99`,
-              border: `1px solid ${palette.hairline}`,
-              padding: "32px",
-              borderRadius: "8px",
-            }}
-          >
-            <div style={{ marginBottom: "32px" }}>
-              <h2
-                style={{
-                  fontSize: "1.3rem",
-                  color: palette.amber,
-                  marginBottom: "12px",
-                }}
-              >
-                REVIEW YOUR WAR ROOM
-              </h2>
-            </div>
-
-            <div style={{ marginBottom: "24px" }}>
-              <div style={{ color: palette.paperDim, fontSize: "0.85rem", marginBottom: "8px" }}>
-                ASSET
-              </div>
-              <div style={{ fontSize: "1.2rem", fontWeight: 600 }}>
-                {formData.assetSymbol} · {formData.assetName}
-              </div>
-            </div>
-
-            <div style={{ marginBottom: "24px" }}>
-              <div style={{ color: palette.paperDim, fontSize: "0.85rem", marginBottom: "8px" }}>
-                YOUR THESIS
-              </div>
-              <p style={{ margin: 0, lineHeight: 1.6 }}>{formData.thesisContent}</p>
+            >
+              Select an asset to research
             </div>
 
             <div
               style={{
-                borderTop: `1px solid ${palette.hairline}`,
-                paddingTop: "24px",
-                display: "flex",
-                gap: "12px",
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+                gap: "16px",
               }}
             >
-              <button
-                onClick={() => setStep("watching")}
+              {premiumAssets.map((asset) => (
+                <button
+                  key={asset.slug}
+                  onClick={() => setSelectedAsset(asset.slug)}
+                  style={{
+                    padding: "20px",
+                    background:
+                      selectedAsset === asset.slug
+                        ? palette.amber
+                        : `${palette.panel}99`,
+                    border:
+                      selectedAsset === asset.slug
+                        ? `2px solid ${palette.amber}`
+                        : `1px solid ${palette.hairline}`,
+                    color:
+                      selectedAsset === asset.slug
+                        ? palette.bg
+                        : palette.paper,
+                    borderRadius: "4px",
+                    fontFamily: "var(--font-header)",
+                    fontSize: "1rem",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "all 0.2s",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (selectedAsset !== asset.slug) {
+                      (e.currentTarget as HTMLElement).style.borderColor =
+                        palette.amber;
+                      (e.currentTarget as HTMLElement).style.color =
+                        palette.amber;
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (selectedAsset !== asset.slug) {
+                      (e.currentTarget as HTMLElement).style.borderColor =
+                        palette.hairline;
+                      (e.currentTarget as HTMLElement).style.color =
+                        palette.paper;
+                    }
+                  }}
+                >
+                  <div>{asset.name}</div>
+                  <div
+                    style={{
+                      fontSize: "0.75rem",
+                      opacity: 0.7,
+                      marginTop: "4px",
+                    }}
+                  >
+                    {asset.symbol}
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setStep(2)}
+              disabled={!selectedAsset}
+              style={{
+                marginTop: "32px",
+                padding: "12px 32px",
+                background: selectedAsset ? palette.amber : palette.gray,
+                color: palette.bg,
+                border: "none",
+                fontFamily: "var(--font-mono)",
+                fontWeight: 600,
+                fontSize: "0.9rem",
+                cursor: selectedAsset ? "pointer" : "not-allowed",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                borderRadius: "2px",
+                transition: "all 0.2s",
+                opacity: selectedAsset ? 1 : 0.5,
+              }}
+              onMouseEnter={(e) => {
+                if (selectedAsset) {
+                  (e.currentTarget as HTMLElement).style.opacity = "0.9";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (selectedAsset) {
+                  (e.currentTarget as HTMLElement).style.opacity = "1";
+                }
+              }}
+            >
+              NEXT: ADD THESIS
+            </button>
+          </div>
+        )}
+
+        {/* Step 2: Add Thesis */}
+        {step === 2 && (
+          <div style={{ marginBottom: "40px" }}>
+            <div
+              style={{
+                fontFamily: "var(--font-header)",
+                fontSize: "1.2rem",
+                fontWeight: 600,
+                marginBottom: "24px",
+                color: palette.paper,
+              }}
+            >
+              Write your investment thesis
+            </div>
+
+            <div
+              style={{
+                background: `${palette.panel}99`,
+                border: `1px solid ${palette.hairline}`,
+                borderRadius: "4px",
+                padding: "16px",
+                marginBottom: "24px",
+              }}
+            >
+              <textarea
+                value={thesis}
+                onChange={(e) => setThesis(e.target.value)}
+                placeholder="Explain your thesis for this asset. Include your key assumptions, expected catalysts, and timeframe..."
                 style={{
-                  padding: "12px 24px",
-                  background: `${palette.panel}99`,
+                  width: "100%",
+                  minHeight: "200px",
+                  background: palette.bg,
                   border: `1px solid ${palette.hairline}`,
+                  borderRadius: "2px",
+                  padding: "16px",
+                  fontFamily: "var(--font-body)",
+                  fontSize: "0.95rem",
                   color: palette.paper,
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  fontWeight: 600,
+                  resize: "vertical",
+                  boxSizing: "border-box",
                 }}
-              >
-                ← BACK
-              </button>
+              />
+            </div>
+
+            <div
+              style={{
+                fontSize: "0.85rem",
+                color: palette.paperDim,
+                marginBottom: "24px",
+                fontFamily: "var(--font-body)",
+              }}
+            >
+              {thesis.length} / 2000 characters
+            </div>
+
+            <div style={{ display: "flex", gap: "16px" }}>
               <button
-                onClick={handleCreateWarRoom}
-                disabled={loading}
+                onClick={() => {
+                  setStep(1);
+                  setError("");
+                }}
                 style={{
                   padding: "12px 32px",
-                  background: palette.green,
-                  color: palette.bg,
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
+                  background: "transparent",
+                  color: palette.amber,
+                  border: `1px solid ${palette.amber}`,
+                  fontFamily: "var(--font-mono)",
                   fontWeight: 600,
-                  opacity: loading ? 0.6 : 1,
+                  fontSize: "0.9rem",
+                  cursor: "pointer",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  borderRadius: "2px",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.background =
+                    `${palette.amber}22`;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.background =
+                    "transparent";
                 }}
               >
-                {loading ? "CREATING..." : "CREATE MY WAR ROOM"}
+                BACK
+              </button>
+
+              <button
+                onClick={handleCreateWarRoom}
+                disabled={loading || !thesis.trim()}
+                style={{
+                  padding: "12px 32px",
+                  background:
+                    loading || !thesis.trim() ? palette.gray : palette.amber,
+                  color: palette.bg,
+                  border: "none",
+                  fontFamily: "var(--font-mono)",
+                  fontWeight: 600,
+                  fontSize: "0.9rem",
+                  cursor:
+                    loading || !thesis.trim() ? "not-allowed" : "pointer",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  borderRadius: "2px",
+                  transition: "all 0.2s",
+                  opacity: loading || !thesis.trim() ? 0.5 : 1,
+                }}
+                onMouseEnter={(e) => {
+                  if (!loading && thesis.trim()) {
+                    (e.currentTarget as HTMLElement).style.opacity = "0.9";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!loading && thesis.trim()) {
+                    (e.currentTarget as HTMLElement).style.opacity = "1";
+                  }
+                }}
+              >
+                {loading ? "CREATING..." : "CREATE WAR ROOM"}
               </button>
             </div>
           </div>
         )}
+
+        {/* Back Link */}
+        <div style={{ marginTop: "40px", textAlign: "center" }}>
+          <Link
+            href="/my-war-rooms"
+            style={{
+              display: "inline-block",
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.85rem",
+              color: palette.amber,
+              textDecoration: "none",
+              borderBottom: `1px solid ${palette.amber}44`,
+              transition: "all 0.2s",
+              padding: "8px 0",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.borderBottomColor =
+                palette.amber;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.borderBottomColor =
+                `${palette.amber}44`;
+            }}
+          >
+            ← BACK TO WAR ROOMS
+          </Link>
+        </div>
       </div>
     </div>
   );

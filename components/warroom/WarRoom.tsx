@@ -14,6 +14,7 @@ import { DeepDiveCard } from "./DeepDiveCard";
 import { ChartModal } from "./ChartModal";
 import { WarRoomImage } from "./WarRoomImage";
 import { NavigationTabs } from "./NavigationTabs";
+import { InlineMyWarRoomCTA } from "../site/PremiumMyWarRoomCTA";
 import type { EditorialContent } from "@/content/types";
 import { ASSETS } from "@/lib/assets";
 
@@ -235,6 +236,9 @@ export function WarRoom({ assetSlug, name, symbol, editorial }: WarRoomProps) {
 
         {/* Navigation Tabs */}
         <NavigationTabs currentSlug={assetSlug} currentCategory={Object.values(ASSETS).find((a) => a.slug === assetSlug)?.category} />
+
+        {/* Premium My War Room CTA */}
+        <InlineMyWarRoomCTA assetName={name} assetSymbol={symbol} />
       </div>
 
       {/* Expanded Chart Modal */}

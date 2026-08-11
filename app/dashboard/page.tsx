@@ -125,13 +125,87 @@ export default function DashboardPage() {
           </button>
         </div>
 
+        {/* My War Rooms Section */}
+        <div style={{ marginBottom: "40px" }}>
+          <div
+            style={{
+              fontFamily: "var(--font-header)",
+              fontSize: "1.3rem",
+              fontWeight: 700,
+              color: palette.amber,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              marginBottom: "20px",
+            }}
+          >
+            PREMIUM RESEARCH
+          </div>
+          <Link
+            href="/my-war-rooms"
+            style={{
+              display: "block",
+              background: `${palette.panel}99`,
+              border: `1px solid ${palette.hairline}`,
+              padding: "24px",
+              borderRadius: "4px",
+              textDecoration: "none",
+              color: "inherit",
+              transition: "all 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor =
+                palette.amber;
+              (e.currentTarget as HTMLElement).style.background =
+                palette.panel;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor =
+                palette.hairline;
+              (e.currentTarget as HTMLElement).style.background =
+                `${palette.panel}99`;
+            }}
+          >
+            <div
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "0.75rem",
+                color: palette.amberDim,
+                marginBottom: "8px",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+              }}
+            >
+              MY WAR ROOMS
+            </div>
+            <div
+              style={{
+                fontFamily: "var(--font-header)",
+                fontSize: "1.2rem",
+                fontWeight: 600,
+                color: palette.amber,
+              }}
+            >
+              Build personalized investment theses
+            </div>
+            <div
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: "0.9rem",
+                color: palette.paperDim,
+                marginTop: "8px",
+              }}
+            >
+              Create private War Rooms for premium assets with your research,
+              thesis, and watchlists.
+            </div>
+          </Link>
+        </div>
+
         {/* Placeholder Content */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
           {[
-            { title: "Your War Rooms", count: 3 },
             { title: "Watchlist Items", count: 12 },
             { title: "Alerts Active", count: 5 },
-            { title: "Performance", value: "+12.4%" },
           ].map((item, idx) => (
             <div
               key={idx}
@@ -153,7 +227,7 @@ export default function DashboardPage() {
                   color: item.value && item.value.includes("+") ? palette.green : palette.amber,
                 }}
               >
-                {(item as any).count || (item as any).value}
+                {(item as any).count}
               </div>
             </div>
           ))}

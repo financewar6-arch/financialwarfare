@@ -1,66 +1,91 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useTheme } from "@/lib/theme-context";
-import { PREMIUM_CONFIG } from "@/lib/premium-config";
+import Link from "next/link";
 
 interface WarRoom {
   id: string;
+  assetSlug: string;
   assetName: string;
   assetSymbol: string;
-  thesis: { content: string };
-  status: "active" | "archived";
-  createdAt: number;
-  updatedAt: number;
+  status: string;
+  isPremium: boolean;
+  createdAt: string;
+  lastViewedAt: string;
 }
 
 export default function MyWarRoomsPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const { palette } = useTheme();
   const [warRooms, setWarRooms] = useState<WarRoom[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userId] = useState("demo-user"); // TODO: Get from auth
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    // Fetch user's war rooms
-    const fetchWarRooms = async () => {
-      try {
-        const res = await fetch(`/api/my-war-rooms?userId=${userId}`);
-        const data = await res.json();
-        if (data.success) {
-          setWarRooms(data.warRooms);
-        }
-      } catch (error) {
-        console.error("Failed to fetch war rooms:", error);
-      } finally {
-        setLoading(false);
+    if (status === "unauthenticated") {
+      router.push("/");
+    }
+  }, [status, router]);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      fetchWarRooms();
+    }
+  }, [status]);
+
+  const fetchWarRooms = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/my-war-rooms");
+
+      if (res.status === 403) {
+        setError(
+          "Premium feature not available. Contact us to unlock My War Rooms."
+        );
+        setWarRooms([]);
+        return;
       }
-    };
 
-    fetchWarRooms();
-  }, [userId]);
+      if (!res.ok) {
+        throw new Error("Failed to fetch war rooms");
+      }
 
-  if (!PREMIUM_CONFIG.enabled) {
+      const data = await res.json();
+      setWarRooms(data);
+      setError("");
+    } catch (err) {
+      setError("Error loading war rooms");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (status === "loading") {
     return (
       <div
         style={{
           background: palette.bg,
           color: palette.paper,
           minHeight: "100vh",
-          padding: "40px 20px",
-          textAlign: "center",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-          <h1 style={{ fontSize: "1.8rem", marginBottom: "16px" }}>
-            MY WAR ROOM
-          </h1>
-          <p style={{ color: palette.paperDim, marginBottom: "24px" }}>
-            This premium feature is not currently available.
-          </p>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "1rem" }}>
+          Loading...
         </div>
       </div>
     );
+  }
+
+  if (!session) {
+    return null;
   }
 
   return (
@@ -69,62 +94,270 @@ export default function MyWarRoomsPage() {
         background: palette.bg,
         color: palette.paper,
         minHeight: "100vh",
+        padding: "40px 20px",
       }}
     >
-      {/* Header */}
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "60px 20px 40px" }}>
-        <h1
+      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+        {/* Header */}
+        <div
           style={{
-            fontFamily: "var(--font-header)",
-            fontSize: "2rem",
-            marginBottom: "8px",
+            marginBottom: "40px",
+            borderBottom: `2px solid ${palette.amber}`,
+            paddingBottom: "20px",
           }}
         >
-          MY WAR ROOMS
-        </h1>
-        <p style={{ color: palette.paperDim, fontSize: "1.05rem" }}>
-          Your personalised market intelligence.
-        </p>
-      </div>
-
-      {/* Content */}
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px 60px" }}>
-        {loading ? (
-          <div style={{ textAlign: "center", color: palette.paperDim }}>
-            Loading...
+          <div
+            style={{
+              fontFamily: "var(--font-header)",
+              fontSize: "1.8rem",
+              fontWeight: 700,
+              color: palette.amber,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              marginBottom: "16px",
+            }}
+          >
+            MY WAR ROOMS
           </div>
-        ) : warRooms.length === 0 ? (
+          <div
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: "0.95rem",
+              color: palette.paperDim,
+              marginBottom: "20px",
+            }}
+          >
+            Personalized research & thesis management for premium assets
+          </div>
+
+          <Link
+            href="/my-war-rooms/create"
+            style={{
+              display: "inline-block",
+              padding: "10px 24px",
+              background: palette.amber,
+              color: palette.bg,
+              border: "none",
+              fontFamily: "var(--font-mono)",
+              fontWeight: 600,
+              fontSize: "0.85rem",
+              cursor: "pointer",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              borderRadius: "2px",
+              textDecoration: "none",
+              transition: "all 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.opacity = "0.9";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.opacity = "1";
+            }}
+          >
+            + NEW WAR ROOM
+          </Link>
+        </div>
+
+        {/* Error Message */}
+        {error && (
+          <div
+            style={{
+              background: `${palette.red}22`,
+              border: `1px solid ${palette.red}`,
+              padding: "16px",
+              marginBottom: "24px",
+              borderRadius: "4px",
+              fontFamily: "var(--font-body)",
+              fontSize: "0.9rem",
+              color: palette.red,
+            }}
+          >
+            {error}
+          </div>
+        )}
+
+        {/* Loading State */}
+        {loading && (
+          <div
+            style={{
+              textAlign: "center",
+              padding: "40px",
+              fontFamily: "var(--font-mono)",
+              color: palette.paperDim,
+            }}
+          >
+            Loading your war rooms...
+          </div>
+        )}
+
+        {/* War Rooms Grid */}
+        {!loading && warRooms.length > 0 && (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+              gap: "24px",
+            }}
+          >
+            {warRooms.map((room) => (
+              <Link
+                key={room.id}
+                href={`/my-war-rooms/${room.id}`}
+                style={{
+                  textDecoration: "none",
+                  color: "inherit",
+                }}
+              >
+                <div
+                  style={{
+                    background: `${palette.panel}99`,
+                    border: `1px solid ${palette.hairline}`,
+                    padding: "24px",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    transition: "all 0.2s",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.borderColor =
+                      palette.amber;
+                    (e.currentTarget as HTMLElement).style.background =
+                      palette.panel;
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.borderColor =
+                      palette.hairline;
+                    (e.currentTarget as HTMLElement).style.background =
+                      `${palette.panel}99`;
+                  }}
+                >
+                  <div
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "0.7rem",
+                      color: palette.amberDim,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    {room.assetSlug.toUpperCase()}
+                  </div>
+
+                  <div
+                    style={{
+                      fontFamily: "var(--font-header)",
+                      fontSize: "1.3rem",
+                      fontWeight: 700,
+                      color: palette.amber,
+                      marginBottom: "4px",
+                    }}
+                  >
+                    {room.assetName}
+                  </div>
+
+                  <div
+                    style={{
+                      fontFamily: "var(--font-body)",
+                      fontSize: "0.85rem",
+                      color: palette.paperDim,
+                      marginBottom: "16px",
+                      flex: 1,
+                    }}
+                  >
+                    {room.assetSymbol}
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "8px",
+                      fontSize: "0.75rem",
+                      color: palette.amberDim,
+                      fontFamily: "var(--font-mono)",
+                    }}
+                  >
+                    <span
+                      style={{
+                        background:
+                          room.status === "active"
+                            ? `${palette.green}22`
+                            : `${palette.gray}22`,
+                        padding: "4px 8px",
+                        borderRadius: "2px",
+                        border:
+                          room.status === "active"
+                            ? `1px solid ${palette.green}`
+                            : `1px solid ${palette.gray}`,
+                        color:
+                          room.status === "active"
+                            ? palette.green
+                            : palette.gray,
+                      }}
+                    >
+                      {room.status.toUpperCase()}
+                    </span>
+                    {room.isPremium && (
+                      <span
+                        style={{
+                          background: `${palette.amber}22`,
+                          padding: "4px 8px",
+                          borderRadius: "2px",
+                          border: `1px solid ${palette.amber}`,
+                          color: palette.amber,
+                        }}
+                      >
+                        PREMIUM
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!loading && warRooms.length === 0 && !error && (
           <div
             style={{
               textAlign: "center",
               padding: "60px 20px",
-              background: `${palette.panel}99`,
-              border: `1px solid ${palette.hairline}`,
-              borderRadius: "8px",
+              background: `${palette.panel}44`,
+              border: `1px dashed ${palette.hairline}`,
+              borderRadius: "4px",
+              fontFamily: "var(--font-body)",
             }}
           >
-            <h2
+            <div
               style={{
-                fontSize: "1.3rem",
-                marginBottom: "12px",
-                color: palette.amber,
+                fontSize: "1.1rem",
+                color: palette.paperDim,
+                marginBottom: "16px",
               }}
             >
-              CREATE YOUR FIRST WAR ROOM
-            </h2>
-            <p style={{ color: palette.paperDim, marginBottom: "24px" }}>
-              Choose an asset and build your personal intelligence workspace.
-            </p>
+              No war rooms yet. Create your first one to start building a
+              personalized research layer.
+            </div>
             <Link
               href="/my-war-rooms/create"
               style={{
                 display: "inline-block",
-                padding: "12px 32px",
+                padding: "10px 24px",
                 background: palette.amber,
                 color: palette.bg,
-                textDecoration: "none",
-                borderRadius: "4px",
+                border: "none",
+                fontFamily: "var(--font-mono)",
                 fontWeight: 600,
+                fontSize: "0.85rem",
+                cursor: "pointer",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                borderRadius: "2px",
+                textDecoration: "none",
                 transition: "all 0.2s",
               }}
               onMouseEnter={(e) => {
@@ -137,152 +370,34 @@ export default function MyWarRoomsPage() {
               CREATE WAR ROOM
             </Link>
           </div>
-        ) : (
-          <div>
-            {/* War Room Grid */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-                gap: "24px",
-                marginBottom: "40px",
-              }}
-            >
-              {warRooms
-                .filter((wr) => wr.status === "active")
-                .map((warRoom) => (
-                  <Link
-                    key={warRoom.id}
-                    href={`/my-war-rooms/${warRoom.id}`}
-                    style={{ textDecoration: "none", color: "inherit" }}
-                  >
-                    <div
-                      style={{
-                        padding: "24px",
-                        background: `${palette.panel}99`,
-                        border: `1px solid ${palette.hairline}`,
-                        borderRadius: "8px",
-                        cursor: "pointer",
-                        transition: "all 0.2s",
-                        height: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.borderColor =
-                          palette.amber;
-                        (e.currentTarget as HTMLElement).style.background =
-                          `${palette.panel}dd`;
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.borderColor =
-                          palette.hairline;
-                        (e.currentTarget as HTMLElement).style.background =
-                          `${palette.panel}99`;
-                      }}
-                    >
-                      {/* Asset Header */}
-                      <div style={{ marginBottom: "16px" }}>
-                        <div
-                          style={{
-                            fontSize: "1.4rem",
-                            fontWeight: 700,
-                            color: palette.amber,
-                          }}
-                        >
-                          {warRoom.assetSymbol}
-                        </div>
-                        <div style={{ color: palette.paperDim, fontSize: "0.9rem" }}>
-                          {warRoom.assetName}
-                        </div>
-                      </div>
-
-                      {/* Thesis Preview */}
-                      <div style={{ marginBottom: "16px", flex: 1 }}>
-                        <div
-                          style={{
-                            fontSize: "0.8rem",
-                            color: palette.paperDim,
-                            marginBottom: "8px",
-                            textTransform: "uppercase",
-                            letterSpacing: "1px",
-                          }}
-                        >
-                          My Thesis
-                        </div>
-                        <p
-                          style={{
-                            fontSize: "0.95rem",
-                            color: palette.paper,
-                            lineHeight: 1.5,
-                            margin: 0,
-                          }}
-                        >
-                          {warRoom.thesis.content.substring(0, 100)}
-                          {warRoom.thesis.content.length > 100 ? "..." : ""}
-                        </p>
-                      </div>
-
-                      {/* Meta */}
-                      <div
-                        style={{
-                          borderTop: `1px solid ${palette.hairline}`,
-                          paddingTop: "12px",
-                          fontSize: "0.75rem",
-                          color: palette.paperDim,
-                        }}
-                      >
-                        Created{" "}
-                        {new Date(warRoom.createdAt).toLocaleDateString()}
-                      </div>
-
-                      {/* CTA */}
-                      <div
-                        style={{
-                          marginTop: "12px",
-                          color: palette.blue,
-                          fontWeight: 600,
-                          fontSize: "0.9rem",
-                        }}
-                      >
-                        OPEN WAR ROOM →
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-            </div>
-
-            {/* Create New Button */}
-            <div style={{ textAlign: "center" }}>
-              <Link
-                href="/my-war-rooms/create"
-                style={{
-                  display: "inline-block",
-                  padding: "12px 32px",
-                  background: `${palette.panel}99`,
-                  border: `2px solid ${palette.amber}`,
-                  color: palette.amber,
-                  textDecoration: "none",
-                  borderRadius: "4px",
-                  fontWeight: 600,
-                  transition: "all 0.2s",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background =
-                    palette.amber;
-                  (e.currentTarget as HTMLElement).style.color = palette.bg;
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background =
-                    `${palette.panel}99`;
-                  (e.currentTarget as HTMLElement).style.color = palette.amber;
-                }}
-              >
-                + CREATE NEW WAR ROOM
-              </Link>
-            </div>
-          </div>
         )}
+
+        {/* Back Link */}
+        <div style={{ marginTop: "40px", textAlign: "center" }}>
+          <Link
+            href="/dashboard"
+            style={{
+              display: "inline-block",
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.85rem",
+              color: palette.amber,
+              textDecoration: "none",
+              borderBottom: `1px solid ${palette.amber}44`,
+              transition: "all 0.2s",
+              padding: "8px 0",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.borderBottomColor =
+                palette.amber;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.borderBottomColor =
+                `${palette.amber}44`;
+            }}
+          >
+            ← Back to Dashboard
+          </Link>
+        </div>
       </div>
     </div>
   );
