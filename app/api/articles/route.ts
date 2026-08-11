@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 interface ArticlePayload {
   headline: string;
@@ -13,6 +13,7 @@ interface ArticlePayload {
 }
 
 export async function POST(request: NextRequest) {
+  const prisma = getPrisma();
   try {
     // Verify Bearer token
     const authHeader = request.headers.get("Authorization");
