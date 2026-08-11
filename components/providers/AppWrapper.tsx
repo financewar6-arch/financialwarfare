@@ -1,5 +1,6 @@
 "use client";
 
+import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "@/lib/theme-context";
 import { WatchlistProvider } from "@/lib/watchlist-context";
 import { Nav } from "@/components/site/Nav";
@@ -8,12 +9,14 @@ import React from "react";
 
 export function AppWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider>
-      <WatchlistProvider>
-        <Nav />
-        {children}
-        <Footer />
-      </WatchlistProvider>
-    </ThemeProvider>
+    <SessionProvider>
+      <ThemeProvider>
+        <WatchlistProvider>
+          <Nav />
+          {children}
+          <Footer />
+        </WatchlistProvider>
+      </ThemeProvider>
+    </SessionProvider>
   );
 }
