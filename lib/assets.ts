@@ -47,7 +47,8 @@ export interface AssetConfig {
   slug: string;
   name: string;
   symbol: string;
-  category: "Crypto" | "Stocks" | "Precious Metals" | "Commodities";
+  category: "Crypto" | "Stocks" | "Precious Metals" | "Commodities" | "Premium";
+  isPremium?: boolean;
   fetchFeed: (rangeDays: RangeDays) => Promise<AssetFeedData>;
 }
 
@@ -399,6 +400,47 @@ export const ASSETS: Record<string, AssetConfig> = {
     symbol: "SMCI",
     category: "Stocks",
     fetchFeed: (rangeDays) => fetchFinnhubQuote("SMCI", rangeDays),
+  },
+  // Premium War Rooms
+  vix: {
+    slug: "vix",
+    name: "VIX VOLATILITY INDEX",
+    symbol: "VIX",
+    category: "Premium",
+    isPremium: true,
+    fetchFeed: (rangeDays) => fetchYahooWithFallback("^VIX", rangeDays, "VIX"),
+  },
+  qqq: {
+    slug: "qqq",
+    name: "QQQ - NASDAQ 100 ETF",
+    symbol: "QQQ",
+    category: "Premium",
+    isPremium: true,
+    fetchFeed: (rangeDays) => fetchFinnhubQuote("QQQ", rangeDays),
+  },
+  splg: {
+    slug: "splg",
+    name: "SPLG - S&P 500 ETF",
+    symbol: "SPLG",
+    category: "Premium",
+    isPremium: true,
+    fetchFeed: (rangeDays) => fetchFinnhubQuote("SPLG", rangeDays),
+  },
+  iwm: {
+    slug: "iwm",
+    name: "IWM - RUSSELL 2000 ETF",
+    symbol: "IWM",
+    category: "Premium",
+    isPremium: true,
+    fetchFeed: (rangeDays) => fetchFinnhubQuote("IWM", rangeDays),
+  },
+  efa: {
+    slug: "efa",
+    name: "EFA - DEVELOPED MARKETS ETF",
+    symbol: "EFA",
+    category: "Premium",
+    isPremium: true,
+    fetchFeed: (rangeDays) => fetchFinnhubQuote("EFA", rangeDays),
   },
 };
 

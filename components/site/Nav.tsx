@@ -6,6 +6,7 @@ import { palette } from "@/lib/warroom/palette";
 import { ASSETS } from "@/lib/assets";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/lib/theme-context";
+import { useSession } from "next-auth/react";
 
 const NAV_ITEMS = [
   { href: "/", label: "HOME" },
@@ -22,6 +23,8 @@ const NAV_ITEMS = [
 
 export function Nav() {
   const { theme, toggleTheme } = useTheme();
+  const router = useRouter();
+  const { data: session } = useSession();
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
   const [searchInput, setSearchInput] = useState("");
   const [searchResults, setSearchResults] = useState<(typeof ASSETS)[keyof typeof ASSETS][]>([]);
@@ -284,6 +287,7 @@ export function Nav() {
         </button>
 
         <button
+          onClick={() => router.push(session ? "/dashboard" : "/signin")}
           style={{
             fontFamily: "var(--font-mono)",
             fontSize: "0.65rem",
@@ -303,7 +307,7 @@ export function Nav() {
             (e.currentTarget as HTMLButtonElement).style.opacity = "1";
           }}
         >
-          SIGN IN
+          {session ? "DASHBOARD" : "SIGN IN"}
         </button>
       </div>
 
