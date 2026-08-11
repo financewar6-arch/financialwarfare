@@ -5,7 +5,7 @@ import Link from "next/link";
 import { WarRoomCard } from "@/components/site/WarRoomCard";
 import { WhatsMovingTheMarket } from "@/components/site/WhatsMovingTheMarket";
 import { AuthBanner } from "@/components/site/AuthBanner";
-import { DailyDispatchWidget } from "@/app/components/DailyDispatchWidget";
+import { DailyDispatchWidget } from "@/components/DailyDispatchWidget";
 import { ASSETS } from "@/lib/assets";
 import { useTheme } from "@/lib/theme-context";
 

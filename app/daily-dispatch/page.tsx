@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTheme } from "@/lib/theme-context";
-import { DailyDispatchCard } from "@/app/components/DailyDispatchCard";
+import { DailyDispatchCard } from "@/components/DailyDispatchCard";
 
 interface Article {
   id: string;
