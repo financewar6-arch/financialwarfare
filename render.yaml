@@ -4,6 +4,7 @@ services:
     runtime: node
     buildCommand: npm ci --production=false && npx prisma generate && npm run build
     startCommand: npx prisma migrate deploy && npm start
+    # Deployment trigger: 2026-08-12T11:50:00Z
     envVars:
       - key: NODE_ENV
         value: production
